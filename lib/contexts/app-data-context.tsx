@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 import { API_CONFIG } from '@/lib/api/config';
 
@@ -191,22 +191,19 @@ interface AppDataContextType {
 
 const AppDataContext = createContext<AppDataContextType | undefined>(undefined);
 
-// Cache for data persistence
-let dataCache: Partial<AppData> = {};
-let lastCacheTime: number = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+// No caching - always fetch fresh data
 
 export function AppDataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppData>({
-    health: dataCache.health || null,
-    stats: dataCache.stats || null,
-    venues: dataCache.venues || null,
-    companies: dataCache.companies || [],
+    health: null,
+    stats: null,
+    venues: null,
+    companies: [],
     loading: {
-      health: !dataCache.health,
-      stats: !dataCache.stats,
-      venues: !dataCache.venues,
-      companies: !dataCache.companies?.length,
+      health: true,
+      stats: true,
+      venues: true,
+      companies: true,
     },
     errors: {
       health: null,
@@ -214,7 +211,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       venues: null,
       companies: null,
     },
-    lastRefresh: dataCache.lastRefresh || null,
+    lastRefresh: null,
   });
 
   const transformCompanyResponse = (response: RawCompanyResponse): CompanyInfo | null => {
@@ -241,18 +238,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const fetchAllData = useCallback(async (forceRefresh = false) => {
-    const now = Date.now();
-    
-    // Use cache if data is fresh and not forcing refresh
-    if (!forceRefresh && (now - lastCacheTime) < CACHE_DURATION && dataCache.health && dataCache.stats && dataCache.venues && dataCache.companies?.length) {
-      setData(prev => ({
-        ...prev,
-        loading: { health: false, stats: false, venues: false, companies: false },
-        errors: { health: null, stats: null, venues: null, companies: null },
-      }));
-      return;
-    }
+  const fetchAllData = useCallback(async () => {
+    // Always fetch fresh data - no caching
 
     // Set loading states
     setData(prev => ({
@@ -270,7 +257,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         { key: 'health', endpoint: API_CONFIG.endpoints.health },
       ];
 
-      console.log('🚀 Starting priority-based data loading:', priorityOrder.map((p, index) => `${index + 1}. ${p.key}`));
+                        console.log('🔄 Refreshing data...');
 
       // Fetch data in priority order
       const results: {
@@ -289,7 +276,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         try {
           if (key === 'companies') {
             // Handle company data separately (two endpoints)
-            console.log(`📊 Loading ${key} data...`);
+                                    // console.log(`📊 Loading ${key} data...`);
             const [company1Response, company2Response] = await Promise.allSettled([
               fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.company1}`, {
                 method: 'GET',
@@ -314,14 +301,14 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
               const company2 = transformCompanyResponse(company2Data);
               
               results.companies = [company1, company2].filter(Boolean) as CompanyInfo[];
-              console.log(`✅ ${key} data loaded successfully`);
+                                        // console.log(`✅ ${key} data loaded successfully`);
             } else {
               results.companies = [];
-              console.log(`❌ ${key} data failed to load`);
+                                        // console.log(`❌ ${key} data failed to load`);
             }
           } else {
             // Handle other endpoints
-            console.log(`📊 Loading ${key} data...`);
+                                    // console.log(`📊 Loading ${key} data...`);
             const response = await fetch(`${API_CONFIG.baseUrl}${endpoint}`, {
               method: 'GET',
               headers: API_CONFIG.defaultHeaders,
@@ -333,12 +320,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
               if (key === 'health') results.health = data as HealthData;
               else if (key === 'stats') results.stats = data as StatsData;
               else if (key === 'venues') results.venues = data as VenuesData;
-              console.log(`✅ ${key} data loaded successfully`);
+                                        // console.log(`✅ ${key} data loaded successfully`);
             } else {
               if (key === 'health') results.health = null;
               else if (key === 'stats') results.stats = null;
               else if (key === 'venues') results.venues = null;
-              console.log(`❌ ${key} data failed to load`);
+                                        // console.log(`❌ ${key} data failed to load`);
             }
           }
 
@@ -362,15 +349,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Update cache with results
-      dataCache = {
-        health: results.health,
-        stats: results.stats,
-        venues: results.venues,
-        companies: results.companies,
-        lastRefresh: new Date(),
-      };
-      lastCacheTime = now;
+      // No caching - data is fresh
 
       // Update final state
       setData(prev => ({
@@ -383,12 +362,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         lastRefresh: new Date(),
       }));
 
-      console.log('🎉 Priority-based loading completed:', {
-        stats: results.stats ? '✅' : '❌',
-        health: results.health ? '✅' : '❌', 
-        venues: results.venues ? '✅' : '❌',
-        companies: results.companies.length ? '✅' : '❌'
-      });
+                        console.log('✅ Data refresh completed');
     } catch (err) {
       console.error('Error fetching app data:', err);
       setData(prev => ({
@@ -407,12 +381,30 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     fetchAllData();
     
-    // Set up interval for periodic refresh (less frequent than individual hooks)
-    const interval = setInterval(() => fetchAllData(), 60000); // 1 minute
-    return () => clearInterval(interval);
+    // Set up interval for periodic refresh - use configured interval
+    const interval = setInterval(() => {
+      // Only refresh if the page is visible (user is actively using the app)
+      if (!document.hidden) {
+        fetchAllData();
+      }
+    }, API_CONFIG.defaultRefreshInterval);
+    
+    // Also refresh when user returns to the tab
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchAllData();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [fetchAllData]);
 
-  const refetch = useCallback(() => fetchAllData(true), [fetchAllData]);
+  const refetch = useCallback(() => fetchAllData(), [fetchAllData]);
 
   const isAnyLoading = Object.values(data.loading).some(loading => loading);
   const isAllLoaded = Object.values(data.loading).every(loading => !loading);

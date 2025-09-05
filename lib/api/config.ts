@@ -19,13 +19,7 @@ export const API_CONFIG = {
     'Content-Type': 'application/json',
   },
   corsMode: 'cors' as RequestMode,
-  defaultRefreshInterval: 30000, // 30 seconds
-  // Performance optimization settings
-  cache: {
-    duration: 5 * 60 * 1000, // 5 minutes
-    maxRetries: 3,
-    retryDelay: 1000,
-  },
+  defaultRefreshInterval: 300000, // 5 minutes
   // Loading priorities (1 = highest priority)
   priorities: {
     stats: 1,     // Admin stats for main dashboard (appears first)

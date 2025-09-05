@@ -1,12 +1,10 @@
-import { ArrowRightIcon } from "lucide-react";
 import { ReactNode } from "react";
 
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 import Github from "../logos/github";
 import React from "../logos/react";
-import { Badge } from "../ui/badge";
+import { ApiStatusBadge } from "../ui/api-status-badge";
 import { Button, type ButtonProps } from "../ui/button";
 import Glow from "../ui/glow";
 import { Mockup, MockupFrame } from "../ui/mockup";
@@ -128,18 +126,8 @@ export default function Hero({
       className="w-full"
     />
   ),
-  // 🎨 BRAND CUSTOMIZATION: Badge content - change announcement text and styling
-  badge = (
-    <Badge variant="outline" className="animate-appear">
-      <span className="text-muted-foreground">
-        Ready for Legends Cup 2025!
-      </span>
-      <a href={siteConfig.getStartedUrl} className="flex items-center gap-1">
-        Get Updates
-        <ArrowRightIcon className="size-3" />
-      </a>
-    </Badge>
-  ),
+  // 🎨 BRAND CUSTOMIZATION: Badge content - shows API loading status
+  badge = <ApiStatusBadge className="animate-appear" />,
   // 🎨 BRAND CUSTOMIZATION: Action buttons - change text, links, and variants
   buttons = [
           {

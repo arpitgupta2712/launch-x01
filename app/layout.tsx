@@ -67,7 +67,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" style={{ colorScheme: "dark" }} className="dark">
-      <body className={`${inter.className} bg-background antialiased overflow-x-hidden`}>
+      <body className={`${inter.className} bg-background antialiased overflow-x-hidden font-sans`}>
         <ThemeProvider>
           <AppDataProvider>
             {children}
