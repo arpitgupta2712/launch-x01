@@ -10,7 +10,7 @@ export const API_CONFIG = {
   endpoints: {
     stats: '/api/hudle/admins/status',
     health: '/api/db/health',
-    venues: '/api/hudle/venues/global-data-health'
+    venues: '/api/hudle/global/data-health'
   },
   defaultHeaders: {
     'Accept': 'application/json',

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+
 import { API_CONFIG } from '@/lib/api/config';
 
 interface StatsData {

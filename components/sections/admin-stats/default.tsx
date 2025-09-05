@@ -1,7 +1,8 @@
 "use client";
 
-import { useStatsData } from "@/lib/hooks/use-stats-data";
 import { RefreshCw } from "lucide-react";
+
+import { useStatsData } from "@/lib/hooks/use-stats-data";
 
 import { Button } from "../../ui/button";
 import { Section } from "../../ui/section";

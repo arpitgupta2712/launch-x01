@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 import { Button, type ButtonProps } from "../../ui/button";

@@ -10,8 +10,9 @@ import {
   RefreshCw,
   TrendingUp
 } from "lucide-react";
-import { ReactNode, useEffect,useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
+import { useVenuesData } from "@/lib/hooks/use-venues-data";
 import { cn } from "@/lib/utils";
 
 import { Badge } from "../../ui/badge";
@@ -114,11 +115,8 @@ export default function HealthDashboard({
   // 🎨 BRAND CUSTOMIZATION: Additional styling classes
   className,
 }: HealthDashboardProps) {
-  // 🎨 API STATE MANAGEMENT: Track loading, data, and errors
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
-  const [, setApiData] = useState<Record<string, unknown> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // 🎨 API DATA HOOK: Use centralized venues data hook
+  const { data: venuesData, loading: isLoading, error, refetch, lastRefresh } = useVenuesData();
   const [realMetrics, setRealMetrics] = useState<HealthMetric[] | null>(null);
 
   // 🎨 FALLBACK METRICS: Obviously rounded values to identify when API is not working
@@ -220,104 +218,60 @@ export default function HealthDashboard({
     `System ${displayMetrics[4]?.value?.toLowerCase() || "loading"} with ${displayMetrics[3]?.value || "Loading..."} data accuracy`
   ];
 
-  // 🎨 API FETCH FUNCTION: Fetch data from ClayGrounds endpoint
-  const fetchHealthData = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('https://claygrounds-6d703322b3bc.herokuapp.com/api/hudle/venues/global-data-health', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+  // 🎨 DATA PROCESSING: Transform API data to metrics format
+  useEffect(() => {
+    if (venuesData?.summary) {
+      const summary = venuesData.summary;
+      const transformedMetrics: HealthMetric[] = [
+        {
+          label: "Total Venues",
+          value: summary.realTimeVenues?.toString() || "1,000",
+          icon: <MapPin className="w-5 h-5" />,
+          status: "healthy" as const,
+          description: "in system",
+          trend: "Live"
         },
-        mode: 'cors', // Explicitly set CORS mode
-      });
+        {
+          label: "Active Venues", 
+          value: summary.scheduledVenues?.toString() || "1,000",
+          icon: <CheckCircle className="w-5 h-5" />,
+          status: "healthy" as const,
+          description: "cached",
+          trend: summary.venueDifference === 0 ? "Synced" : `Diff: ${summary.venueDifference}`
+        },
+        {
+          label: "Regions",
+          value: summary.totalRegions?.toString() || "10",
+          icon: <Globe className="w-5 h-5" />,
+          status: "healthy" as const,
+          description: "scanned"
+        },
+        {
+          label: "Data Accuracy",
+          value: summary.accuracyPercentage || "100%",
+          icon: <BarChart3 className="w-5 h-5" />,
+          status: summary.healthStatus === "excellent" ? "healthy" : "warning" as const,
+          description: "score",
+          trend: summary.dataStaleness.includes("day") ? summary.dataStaleness : "Fresh"
+        },
+        {
+          label: "System Status",
+          value: summary.healthStatus === "excellent" ? "Operational" : "Warning",
+          icon: <Monitor className="w-5 h-5" />,
+          status: summary.healthStatus === "excellent" ? "healthy" : "warning" as const,
+          description: "all systems"
+        }
+      ];
       
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      setApiData(data);
-      setLastRefresh(new Date());
-      
-      // Transform API data to metrics format
-      console.log('API Data received:', data);
-      
-      // Update metrics with real data
-      if (data.user_id?.summary) {
-        const summary = data.user_id.summary;
-        const realMetrics: HealthMetric[] = [
-          {
-            label: "Total Venues",
-            value: summary.realTimeVenues?.toString() || "1,000",
-            icon: <MapPin className="w-5 h-5" />,
-            status: "healthy" as const,
-            description: "in system",
-            trend: "Live"
-          },
-          {
-            label: "Active Venues", 
-            value: summary.scheduledVenues?.toString() || "1,000",
-            icon: <CheckCircle className="w-5 h-5" />,
-            status: "healthy" as const,
-            description: "cached",
-            trend: summary.venueDifference === 0 ? "Synced" : `Diff: ${summary.venueDifference}`
-          },
-          {
-            label: "Regions",
-            value: summary.totalRegions?.toString() || "10",
-            icon: <Globe className="w-5 h-5" />,
-            status: "healthy" as const,
-            description: "scanned"
-          },
-          {
-            label: "Data Accuracy",
-            value: summary.accuracyPercentage || "100%",
-            icon: <BarChart3 className="w-5 h-5" />,
-            status: summary.healthStatus === "excellent" ? "healthy" : "warning" as const,
-            description: "score",
-            trend: summary.dataStaleness === "Fresh" ? "Fresh" : "Stale"
-          },
-          {
-            label: "System Status",
-            value: summary.healthStatus === "excellent" ? "Operational" : "Warning",
-            icon: <Monitor className="w-5 h-5" />,
-            status: summary.healthStatus === "excellent" ? "healthy" : "warning" as const,
-            description: "all systems"
-          }
-        ];
-        
-        // Update the metrics state
-        setRealMetrics(realMetrics);
-        console.log('Transformed metrics:', realMetrics);
-      }
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(errorMessage);
-      console.error('API Error:', err);
-      
-      // Check if it's a CORS error
-      if (errorMessage.includes('CORS') || errorMessage.includes('blocked')) {
-        setError('CORS Error: API call blocked by browser. Check server CORS configuration.');
-      }
-    } finally {
-      setIsLoading(false);
+      setRealMetrics(transformedMetrics);
+      console.log('Transformed metrics:', transformedMetrics);
     }
-  };
+  }, [venuesData]);
 
   // 🎨 MANUAL REFRESH HANDLER
   const handleRefresh = () => {
-    fetchHealthData();
+    refetch();
   };
-
-  // 🎨 INITIAL API CALL: Fetch data on component mount
-  useEffect(() => {
-    fetchHealthData();
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -328,6 +282,8 @@ export default function HealthDashboard({
 
   // 🎨 DATA FRESHNESS LOGIC: Calculate time since last refresh
   const getFreshnessBadge = () => {
+    if (!lastRefresh) return null;
+    
     const now = new Date();
     const diffMs = now.getTime() - lastRefresh.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -388,13 +344,15 @@ export default function HealthDashboard({
           {/* 🎨 BRAND CUSTOMIZATION: Data freshness badge with color coding */}
           {badge !== false && (
             <div className="flex items-center gap-3">
-              <Badge 
-                variant={freshnessBadge.variant}
-                className={freshnessBadge.className}
-              >
-                <Clock className="w-3 h-3 mr-1" />
-                {freshnessBadge.text}
-              </Badge>
+              {freshnessBadge && (
+                <Badge 
+                  variant={freshnessBadge.variant}
+                  className={freshnessBadge.className}
+                >
+                  <Clock className="w-3 h-3 mr-1" />
+                  {freshnessBadge.text}
+                </Badge>
+              )}
               
               {/* 🎨 BRAND CUSTOMIZATION: Manual refresh button */}
               <Button

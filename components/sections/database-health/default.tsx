@@ -14,7 +14,7 @@ import { useHealthData } from "@/lib/hooks/use-health-data";
 
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Section } from "../../ui/section";
 
 interface ItemProps {

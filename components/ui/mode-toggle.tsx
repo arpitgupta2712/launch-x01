@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDownIcon, Sun, Moon, Monitor } from "lucide-react";
+import { ChevronsUpDownIcon, Monitor,Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import * as React from "react";
 import { useEffect,useState } from "react";
