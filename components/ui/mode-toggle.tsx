@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDownIcon } from "lucide-react";
+import { ChevronsUpDownIcon, Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 import * as React from "react";
 import { useEffect,useState } from "react";
@@ -25,23 +25,38 @@ export function ModeToggle() {
     return null;
   }
 
+  const getThemeIcon = () => {
+    switch (theme) {
+      case "light":
+        return <Sun className="size-4" />;
+      case "dark":
+        return <Moon className="size-4" />;
+      case "system":
+        return <Monitor className="size-4" />;
+      default:
+        return <Sun className="size-4" />;
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="gap-1 px-2 py-0 text-xs">
-          <span className="capitalize">{theme}</span>
-          <span className="inline"> theme</span>
+        <Button variant="ghost" className="gap-1 px-2 py-0">
+          {getThemeIcon()}
           <ChevronsUpDownIcon className="size-3" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => setTheme("light")} className="gap-2">
+          <Sun className="size-4" />
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => setTheme("dark")} className="gap-2">
+          <Moon className="size-4" />
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => setTheme("system")} className="gap-2">
+          <Monitor className="size-4" />
           System
         </DropdownMenuItem>
       </DropdownMenuContent>

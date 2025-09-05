@@ -4,7 +4,6 @@ import { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-import LaunchUI from "../../logos/launch-ui";
 import { ClayGroundsComposite } from "../../logos/claygrounds";
 import { Button, type ButtonProps } from "../../ui/button";
 import { ModeToggle } from "../../ui/mode-toggle";
@@ -69,34 +68,6 @@ interface NavbarProps {
   className?: string;
 }
 
-/**
- * Main Navbar Component - The primary navigation header for the application
- * 
- * This component renders a responsive navigation bar with:
- * - Brand logo and name on the left
- * - Main navigation menu (desktop)
- * - Action buttons/links on the right (desktop)
- * - Mobile hamburger menu with slide-out navigation
- * 
- * @component
- * @param {NavbarProps} props - Configuration object for the navbar
- * @returns {JSX.Element} The rendered navbar component
- * 
- * @example
- * // Basic usage with defaults
- * <Navbar />
- * 
- * @example
- * // Custom brand configuration
- * <Navbar 
- *   logo={<MyLogo />}
- *   name="My Brand"
- *   actions={[
- *     { text: "Login", href: "/login", isButton: false },
- *     { text: "Sign Up", href: "/signup", isButton: true }
- *   ]}
- * />
- */
 export default function Navbar({
   logo = <ClayGroundsComposite logomarkVariant="chartreuse" logotypeVariant="chartreuse" logomarkWidth={32} logomarkHeight={32} logotypeWidth={120} logotypeHeight={32} gap="gap-2" />, // 🎨 BRAND CUSTOMIZATION: ClayGrounds composite with mixed colors
   homeUrl = siteConfig.url, // 🎨 BRAND CUSTOMIZATION: Set your home page URL
@@ -109,7 +80,7 @@ export default function Navbar({
     { text: "Sign in", href: siteConfig.url, isButton: false }, // 🎨 BRAND CUSTOMIZATION: Update action buttons
     {
       text: "Get Started",
-      href: siteConfig.url,
+      href: "https://www.claygrounds.com",
       isButton: true,
       variant: "default",
     },

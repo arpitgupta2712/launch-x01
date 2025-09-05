@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 import Github from "../../logos/github";
 import { ClayGroundsComposite } from "../../logos/claygrounds";
+import React from "../../logos/react";
 import { Badge } from "../../ui/badge";
 import { Button, type ButtonProps } from "../../ui/button";
 import Glow from "../../ui/glow";
@@ -143,10 +144,10 @@ export default function Hero({
   // 🎨 BRAND CUSTOMIZATION: Action buttons - change text, links, and variants
   buttons = [
           {
-        href: "https://claygrounds.com",
-        text: "",
+        href: "https://goaltech.in",
+        text: "GoalTech",
         variant: "default",
-        icon: <ClayGroundsComposite logomarkWidth={16} logomarkHeight={16} logotypeWidth={80} logotypeHeight={16} variant="black" gap="gap-1" />,
+        icon: <React className="mr-2 size-4" />,
       },
     {
       href: "https://github.com/arpitgupta2712",

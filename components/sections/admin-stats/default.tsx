@@ -18,7 +18,7 @@ interface StatsProps {
   className?: string;
 }
 
-export default function Stats({
+export default function AdminStats({
   items,
   className,
 }: StatsProps) {
