@@ -14,14 +14,14 @@ export default function Home() {
     <main className="min-h-screen w-full overflow-hidden bg-background text-foreground">
       <Navbar />
       <Hero />
-      <DatabaseHealth />
+      <Stats />
       <Divider variant="arrow" size="sm" />
       <Pricing />
       <Divider variant="glow" size="sm" />
-      <SystemHealth />
+      <DatabaseHealth />
       <FAQ />
       <Divider variant="arrow" size="sm" />
-      <Stats />
+      <SystemHealth />
       <CTA />
       <Footer />
     </main>

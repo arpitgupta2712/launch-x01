@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 import LaunchUI from "../../logos/launch-ui";
+import { ClayGroundsComposite } from "../../logos/claygrounds";
 import { Button, type ButtonProps } from "../../ui/button";
 import { ModeToggle } from "../../ui/mode-toggle";
 import {
@@ -97,8 +98,7 @@ interface NavbarProps {
  * />
  */
 export default function Navbar({
-  logo = <LaunchUI />, // 🎨 BRAND CUSTOMIZATION: Replace LaunchUI with your logo component
-  name = "Launch UI", // 🎨 BRAND CUSTOMIZATION: Change to your brand name
+  logo = <ClayGroundsComposite logomarkVariant="chartreuse" logotypeVariant="chartreuse" logomarkWidth={32} logomarkHeight={32} logotypeWidth={120} logotypeHeight={32} gap="gap-2" />, // 🎨 BRAND CUSTOMIZATION: ClayGrounds composite with mixed colors
   homeUrl = siteConfig.url, // 🎨 BRAND CUSTOMIZATION: Set your home page URL
   mobileLinks = [
     { text: "Getting Started", href: siteConfig.url }, // 🎨 BRAND CUSTOMIZATION: Update mobile menu links
@@ -135,7 +135,6 @@ export default function Navbar({
               className="flex items-center gap-2 text-xl font-bold"
             >
               {logo}
-              {name}
             </a>
             {/* 🎨 MAIN NAVIGATION: Desktop navigation menu (can be customized or hidden) */}
             {showNavigation && (customNavigation || <Navigation />)}
@@ -195,7 +194,7 @@ export default function Navbar({
                     href={homeUrl}
                     className="flex items-center gap-2 text-xl font-bold"
                   >
-                    <span>{name}</span>
+                    {logo}
                   </a>
                   {/* 🎨 MOBILE NAVIGATION LINKS: List of navigation links for mobile */}
                   {mobileLinks.map((link, index) => (

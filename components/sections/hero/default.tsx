@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 import Github from "../../logos/github";
+import { ClayGroundsComposite } from "../../logos/claygrounds";
 import { Badge } from "../../ui/badge";
 import { Button, type ButtonProps } from "../../ui/button";
 import Glow from "../../ui/glow";
@@ -113,9 +114,9 @@ interface HeroProps {
  */
 export default function Hero({
   // 🎨 BRAND CUSTOMIZATION: Main headline - change to your brand message
-  title = "Give your big idea the design it deserves",
+  title = "Discovering every court, field, and arena",
   // 🎨 BRAND CUSTOMIZATION: Subtitle - change to your brand description
-  description = "Professionally designed blocks and templates built with React, Shadcn/ui and Tailwind that will help your product stand out.",
+  description = "From Mumbai's bustling courts to Delhi's premier venues - we're mapping India's sports landscape, one facility at a time.",
   // 🎨 BRAND CUSTOMIZATION: Screenshot/mockup - replace with your product images
   mockup = (
     <Screenshot
@@ -141,13 +142,14 @@ export default function Hero({
   ),
   // 🎨 BRAND CUSTOMIZATION: Action buttons - change text, links, and variants
   buttons = [
+          {
+        href: "https://claygrounds.com",
+        text: "",
+        variant: "default",
+        icon: <ClayGroundsComposite logomarkWidth={16} logomarkHeight={16} logotypeWidth={80} logotypeHeight={16} variant="black" gap="gap-1" />,
+      },
     {
-      href: siteConfig.getStartedUrl,
-      text: "Get Started",
-      variant: "default",
-    },
-    {
-      href: siteConfig.links.github,
+      href: "https://github.com/arpitgupta2712",
       text: "Github",
       variant: "glow",
       icon: <Github className="mr-2 size-4" />,
