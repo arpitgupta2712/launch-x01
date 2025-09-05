@@ -165,74 +165,74 @@
  * 🎨 BRAND CUSTOMIZATION: Change these values to match your brand colors
  */
 :root {
-  /* 🎨 BRAND COLORS: Your main brand identity (CHANGE THESE FOR YOUR BRAND) */
-  --brand: oklch(66.5% 0.1804 47.04); /* 🎨 Main brand color - currently orange/yellow */
-  --brand-foreground: oklch(75.77% 0.159 55.91); /* 🎨 Text color on brand background */
+  /* 🎨 BRAND COLORS: Your main brand identity (CUSTOMIZED FOR YOUR BRAND) */
+  --brand: #003D1E; /* 🎨 Forest Green (#003D1E) - Deep, professional brand color */
+  --brand-foreground: #FFFFFF; /* 🎨 White text on dark green - maximum contrast */
 
-  /* 🎨 CORE UI COLORS: Background and text colors */
-  --background: oklch(97.65% 0.001 17.18); /* 🎨 Main background color - very light gray */
-  --foreground: oklch(0.141 0.005 285.823); /* 🎨 Main text color - very dark gray */
+  /* 🎨 CORE UI COLORS: Background and text colors (WHITE/BLACK FOUNDATION) */
+  --background: #FFFFFF; /* 🎨 Pure white background */
+  --foreground: #000000; /* 🎨 Pure black text */
   
   /* 🎨 CARD COLORS: Card backgrounds and text */
-  --card: oklch(1 0 0); /* 🎨 Card background - pure white */
-  --card-foreground: oklch(0.141 0.005 285.823); /* 🎨 Card text - same as foreground */
+  --card: #FFFFFF; /* 🎨 Card background - pure white */
+  --card-foreground: #000000; /* 🎨 Card text - pure black */
   
   /* 🎨 OVERLAY COLORS: Popovers, modals, dropdowns */
-  --popover: oklch(1 0 0); /* 🎨 Popover background - pure white */
-  --popover-foreground: oklch(0.141 0.005 285.823); /* 🎨 Popover text */
+  --popover: #FFFFFF; /* 🎨 Popover background - pure white */
+  --popover-foreground: #000000; /* 🎨 Popover text - pure black */
   
-  /* 🎨 PRIMARY COLORS: Main interactive elements (buttons, links) */
-  --primary: oklch(66.5% 0.1804 47.04); /* 🎨 Primary color - same as brand */
-  --primary-foreground: oklch(0.985 0 0); /* 🎨 Text on primary - near white */
+  /* 🎨 PRIMARY COLORS: Main interactive elements (buttons, links) - CHARTREUSE */
+  --primary: #DCFF00; /* 🎨 Chartreuse (#DCFF00) - Bright, energetic primary color */
+  --primary-foreground: #000000; /* 🎨 Black text on chartreuse - high contrast */
   
-  /* 🎨 SECONDARY COLORS: Secondary UI elements */
-  --secondary: oklch(0.967 0.001 286.375); /* 🎨 Secondary background - light gray */
-  --secondary-foreground: oklch(0.21 0.006 285.885); /* 🎨 Secondary text - dark gray */
+  /* 🎨 SECONDARY COLORS: Secondary UI elements - LIGHT GRAY */
+  --secondary: #F5F5F5; /* 🎨 Light gray background */
+  --secondary-foreground: #333333; /* 🎨 Dark gray text */
   
   /* 🎨 MUTED COLORS: Subtle text and backgrounds */
-  --muted: oklch(0.967 0.001 286.375); /* 🎨 Muted background - same as secondary */
-  --muted-foreground: oklch(0.552 0.016 285.938); /* 🎨 Muted text - medium gray */
+  --muted: #F5F5F5; /* 🎨 Muted background - light gray */
+  --muted-foreground: #666666; /* 🎨 Muted text - medium gray */
   
-  /* 🎨 ACCENT COLORS: Secondary interactive elements */
-  --accent: oklch(0.927 0.001 286.375); /* 🎨 Accent background - slightly darker than muted */
-  --accent-foreground: oklch(0.21 0.006 285.885); /* 🎨 Accent text - same as secondary */
+  /* 🎨 ACCENT COLORS: Secondary interactive elements - SAFETY ORANGE */
+  --accent: #FF7700; /* 🎨 Safety Orange (#FF7700) - Warm, attention-grabbing accent */
+  --accent-foreground: #FFFFFF; /* 🎨 White text on orange - high contrast */
   
   /* 🎨 STATE COLORS: Error/destructive states */
-  --destructive: oklch(0.577 0.245 27.325); /* 🎨 Destructive color - red */
-  --destructive-foreground: oklch(0.577 0.245 27.325); /* 🎨 Destructive text - same as destructive */
+  --destructive: #DC2626; /* 🎨 Destructive color - red */
+  --destructive-foreground: #FFFFFF; /* 🎨 White text on red */
   
   /* 🎨 INTERACTIVE ELEMENT COLORS: Form inputs, borders, focus rings */
-  --border: oklch(0.92 0.004 286.32); /* 🎨 Border color - light gray */
-  --input: oklch(0.92 0.004 286.32); /* 🎨 Input background - same as border */
-  --ring: oklch(0.705 0.015 286.067); /* 🎨 Focus ring color - medium gray */
+  --border: #E5E5E5; /* 🎨 Border color - light gray */
+  --input: #F5F5F5; /* 🎨 Input background - very light gray */
+  --ring: #003D1E; /* 🎨 Focus ring color - Forest Green (brand color) */
   
-  /* 🎨 CHART COLORS: Data visualization colors */
-  --chart-1: oklch(0.646 0.222 41.116); /* 🎨 Chart color 1 - orange */
-  --chart-2: oklch(0.6 0.118 184.704); /* 🎨 Chart color 2 - blue */
-  --chart-3: oklch(0.398 0.07 227.392); /* 🎨 Chart color 3 - dark blue */
-  --chart-4: oklch(0.828 0.189 84.429); /* 🎨 Chart color 4 - green */
-  --chart-5: oklch(0.769 0.188 70.08); /* 🎨 Chart color 5 - yellow-green */
+  /* 🎨 CHART COLORS: Data visualization colors (USING YOUR BRAND COLORS) */
+  --chart-1: #003D1E; /* 🎨 Chart color 1 - Forest Green */
+  --chart-2: #DCFF00; /* 🎨 Chart color 2 - Chartreuse */
+  --chart-3: #FF7700; /* 🎨 Chart color 3 - Safety Orange */
+  --chart-4: #3B82F6; /* 🎨 Chart color 4 - Blue (complementary) */
+  --chart-5: #8B5CF6; /* 🎨 Chart color 5 - Purple (complementary) */
   
   /* 🎨 LAYOUT: Border radius */
   --radius: 0.625rem; /* 🎨 Base border radius - 10px */
   
   /* 🎨 SIDEBAR COLORS: Sidebar-specific color variants */
-  --sidebar: oklch(0.985 0 0); /* 🎨 Sidebar background - near white */
-  --sidebar-foreground: oklch(0.141 0.005 285.823); /* 🎨 Sidebar text - same as foreground */
-  --sidebar-primary: oklch(0.21 0.006 285.885); /* 🎨 Sidebar primary - dark gray */
-  --sidebar-primary-foreground: oklch(0.985 0 0); /* 🎨 Sidebar primary text - near white */
-  --sidebar-accent: oklch(0.967 0.001 286.375); /* 🎨 Sidebar accent - light gray */
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885); /* 🎨 Sidebar accent text - dark gray */
-  --sidebar-border: oklch(0.92 0.004 286.32); /* 🎨 Sidebar border - same as border */
-  --sidebar-ring: oklch(0.705 0.015 286.067); /* 🎨 Sidebar focus ring - same as ring */
+  --sidebar: #FFFFFF; /* 🎨 Sidebar background - pure white */
+  --sidebar-foreground: #000000; /* 🎨 Sidebar text - pure black */
+  --sidebar-primary: #003D1E; /* 🎨 Sidebar primary - Forest Green */
+  --sidebar-primary-foreground: #FFFFFF; /* 🎨 Sidebar primary text - white */
+  --sidebar-accent: #F5F5F5; /* 🎨 Sidebar accent - light gray */
+  --sidebar-accent-foreground: #333333; /* 🎨 Sidebar accent text - dark gray */
+  --sidebar-border: #E5E5E5; /* 🎨 Sidebar border - light gray */
+  --sidebar-ring: #003D1E; /* 🎨 Sidebar focus ring - Forest Green */
 
   /* 🎨 LIGHT/ILLUSTRATION COLORS: Used for light effects and illustrations */
-  --light: var(--brand); /* 🎨 Light effect color - same as brand */
-  --light-foreground: var(--brand-foreground); /* 🎨 Light effect text - same as brand foreground */
+  --light: #DCFF00; /* 🎨 Light effect color - Chartreuse */
+  --light-foreground: #000000; /* 🎨 Light effect text - black */
 
   /* 🎨 SHADOWS: Drop shadow colors */
   --shadow: #00000008; /* 🎨 Light shadow - very transparent black */
-  --shadow-strong: #00000008; /* 🎨 Strong shadow - same as light shadow */
+  --shadow-strong: #00000020; /* 🎨 Strong shadow - more opaque black */
 }
 
 /**
@@ -244,71 +244,71 @@
  * 🎨 BRAND CUSTOMIZATION: Change these values to match your brand colors for dark mode
  */
 .dark {
-  /* 🎨 BRAND COLORS: Your main brand identity for dark mode (CHANGE THESE FOR YOUR BRAND) */
-  --brand: oklch(83.6% 0.1177 66.87); /* 🎨 Main brand color - brighter for dark mode */
-  --brand-foreground: oklch(75.77% 0.159 55.91); /* 🎨 Text color on brand background */
+  /* 🎨 BRAND COLORS: Your main brand identity for dark mode (CUSTOMIZED FOR YOUR BRAND) */
+  --brand: #1A5D3A; /* 🎨 Forest Green - slightly lighter for dark mode */
+  --brand-foreground: #FFFFFF; /* 🎨 White text on dark green - maximum contrast */
 
-  /* 🎨 CORE UI COLORS: Background and text colors for dark mode */
-  --background: oklch(0.141 0.005 285.823); /* 🎨 Main background - very dark gray */
-  --foreground: oklch(0.985 0 0); /* 🎨 Main text - near white */
+  /* 🎨 CORE UI COLORS: Background and text colors for dark mode (BLACK/WHITE FOUNDATION) */
+  --background: #000000; /* 🎨 Pure black background */
+  --foreground: #FFFFFF; /* 🎨 Pure white text */
   
   /* 🎨 CARD COLORS: Card backgrounds and text for dark mode */
-  --card: oklch(0.141 0.005 285.823); /* 🎨 Card background - same as background */
-  --card-foreground: oklch(0.985 0 0); /* 🎨 Card text - near white */
+  --card: #1A1A1A; /* 🎨 Card background - very dark gray */
+  --card-foreground: #FFFFFF; /* 🎨 Card text - pure white */
   
   /* 🎨 OVERLAY COLORS: Popovers, modals, dropdowns for dark mode */
-  --popover: oklch(0.141 0.005 285.823); /* 🎨 Popover background - same as background */
-  --popover-foreground: oklch(0.985 0 0); /* 🎨 Popover text - near white */
+  --popover: #1A1A1A; /* 🎨 Popover background - very dark gray */
+  --popover-foreground: #FFFFFF; /* 🎨 Popover text - pure white */
   
-  /* 🎨 PRIMARY COLORS: Main interactive elements for dark mode */
-  --primary: oklch(0.985 0 0); /* 🎨 Primary color - near white (inverted from light mode) */
-  --primary-foreground: oklch(0.21 0.006 285.885); /* 🎨 Text on primary - dark gray */
+  /* 🎨 PRIMARY COLORS: Main interactive elements for dark mode - CHARTREUSE */
+  --primary: #DCFF00; /* 🎨 Chartreuse - same as light mode (bright and energetic) */
+  --primary-foreground: #000000; /* 🎨 Black text on chartreuse - high contrast */
   
   /* 🎨 SECONDARY COLORS: Secondary UI elements for dark mode */
-  --secondary: oklch(0.274 0.006 286.033); /* 🎨 Secondary background - dark gray */
-  --secondary-foreground: oklch(0.985 0 0); /* 🎨 Secondary text - near white */
+  --secondary: #333333; /* 🎨 Secondary background - dark gray */
+  --secondary-foreground: #FFFFFF; /* 🎨 Secondary text - pure white */
   
   /* 🎨 MUTED COLORS: Subtle text and backgrounds for dark mode */
-  --muted: oklch(0.274 0.006 286.033); /* 🎨 Muted background - same as secondary */
-  --muted-foreground: oklch(0.705 0.015 286.067); /* 🎨 Muted text - medium gray */
+  --muted: #333333; /* 🎨 Muted background - dark gray */
+  --muted-foreground: #999999; /* 🎨 Muted text - medium gray */
   
-  /* 🎨 ACCENT COLORS: Secondary interactive elements for dark mode */
-  --accent: oklch(0.274 0.006 286.033); /* 🎨 Accent background - same as secondary */
-  --accent-foreground: oklch(0.985 0 0); /* 🎨 Accent text - near white */
+  /* 🎨 ACCENT COLORS: Secondary interactive elements for dark mode - SAFETY ORANGE */
+  --accent: #FF7700; /* 🎨 Safety Orange - same as light mode (warm and attention-grabbing) */
+  --accent-foreground: #FFFFFF; /* 🎨 White text on orange - high contrast */
   
   /* 🎨 STATE COLORS: Error/destructive states for dark mode */
-  --destructive: oklch(0.396 0.141 25.723); /* 🎨 Destructive color - darker red */
-  --destructive-foreground: oklch(0.637 0.237 25.331); /* 🎨 Destructive text - lighter red */
+  --destructive: #DC2626; /* 🎨 Destructive color - red */
+  --destructive-foreground: #FFFFFF; /* 🎨 White text on red */
   
   /* 🎨 INTERACTIVE ELEMENT COLORS: Form inputs, borders, focus rings for dark mode */
-  --border: oklch(0.885 0.006 286.033); /* 🎨 Border color - light gray */
-  --input: oklch(0.274 0.006 286.033); /* 🎨 Input background - dark gray */
-  --ring: oklch(0.442 0.017 285.786); /* 🎨 Focus ring color - medium gray */
+  --border: #404040; /* 🎨 Border color - dark gray */
+  --input: #262626; /* 🎨 Input background - very dark gray */
+  --ring: #1A5D3A; /* 🎨 Focus ring color - Forest Green (brand color) */
   
-  /* 🎨 CHART COLORS: Data visualization colors for dark mode */
-  --chart-1: oklch(0.488 0.243 264.376); /* 🎨 Chart color 1 - purple */
-  --chart-2: oklch(0.696 0.17 162.48); /* 🎨 Chart color 2 - teal */
-  --chart-3: oklch(0.769 0.188 70.08); /* 🎨 Chart color 3 - yellow-green */
-  --chart-4: oklch(0.627 0.265 303.9); /* 🎨 Chart color 4 - pink */
-  --chart-5: oklch(0.645 0.246 16.439); /* 🎨 Chart color 5 - orange */
+  /* 🎨 CHART COLORS: Data visualization colors for dark mode (USING YOUR BRAND COLORS) */
+  --chart-1: #1A5D3A; /* 🎨 Chart color 1 - Forest Green */
+  --chart-2: #DCFF00; /* 🎨 Chart color 2 - Chartreuse */
+  --chart-3: #FF7700; /* 🎨 Chart color 3 - Safety Orange */
+  --chart-4: #3B82F6; /* 🎨 Chart color 4 - Blue (complementary) */
+  --chart-5: #8B5CF6; /* 🎨 Chart color 5 - Purple (complementary) */
   
   /* 🎨 SIDEBAR COLORS: Sidebar-specific color variants for dark mode */
-  --sidebar: oklch(0.21 0.006 285.885); /* 🎨 Sidebar background - darker than main background */
-  --sidebar-foreground: oklch(0.985 0 0); /* 🎨 Sidebar text - near white */
-  --sidebar-primary: oklch(0.488 0.243 264.376); /* 🎨 Sidebar primary - purple */
-  --sidebar-primary-foreground: oklch(0.985 0 0); /* 🎨 Sidebar primary text - near white */
-  --sidebar-accent: oklch(0.274 0.006 286.033); /* 🎨 Sidebar accent - same as secondary */
-  --sidebar-accent-foreground: oklch(0.985 0 0); /* 🎨 Sidebar accent text - near white */
-  --sidebar-border: oklch(0.274 0.006 286.033); /* 🎨 Sidebar border - same as secondary */
-  --sidebar-ring: oklch(0.442 0.017 285.786); /* 🎨 Sidebar focus ring - same as ring */
+  --sidebar: #0D0D0D; /* 🎨 Sidebar background - very dark gray */
+  --sidebar-foreground: #FFFFFF; /* 🎨 Sidebar text - pure white */
+  --sidebar-primary: #1A5D3A; /* 🎨 Sidebar primary - Forest Green */
+  --sidebar-primary-foreground: #FFFFFF; /* 🎨 Sidebar primary text - white */
+  --sidebar-accent: #333333; /* 🎨 Sidebar accent - dark gray */
+  --sidebar-accent-foreground: #FFFFFF; /* 🎨 Sidebar accent text - white */
+  --sidebar-border: #404040; /* 🎨 Sidebar border - dark gray */
+  --sidebar-ring: #1A5D3A; /* 🎨 Sidebar focus ring - Forest Green */
 
   /* 🎨 LIGHT/ILLUSTRATION COLORS: Used for light effects and illustrations in dark mode */
-  --light: var(--foreground); /* 🎨 Light effect color - same as foreground */
-  --light-foreground: var(--foreground); /* 🎨 Light effect text - same as foreground */
+  --light: #DCFF00; /* 🎨 Light effect color - Chartreuse */
+  --light-foreground: #000000; /* 🎨 Light effect text - black */
 
   /* 🎨 SHADOWS: Drop shadow colors for dark mode */
-  --shadow: #00000020; /* 🎨 Light shadow - more opaque black */
-  --shadow-strong: #00000088; /* 🎨 Strong shadow - very opaque black */
+  --shadow: #00000040; /* 🎨 Light shadow - more opaque black */
+  --shadow-strong: #00000080; /* 🎨 Strong shadow - very opaque black */
 }
 
 /**
@@ -326,5 +326,37 @@
   /* 🎨 BODY STYLES: Set default background and text colors */
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/**
+ * 🎨 CUSTOM BRAND STYLES
+ * 
+ * Additional styles to ensure brand colors render correctly
+ */
+@layer components {
+  /* 🎨 ENSURE BRAND COLORS WORK: Force brand colors to display correctly */
+  .bg-primary {
+    background-color: var(--primary) !important;
+  }
+  
+  .text-primary-foreground {
+    color: var(--primary-foreground) !important;
+  }
+  
+  .bg-brand {
+    background-color: var(--brand) !important;
+  }
+  
+  .text-brand-foreground {
+    color: var(--brand-foreground) !important;
+  }
+  
+  .bg-accent {
+    background-color: var(--accent) !important;
+  }
+  
+  .text-accent-foreground {
+    color: var(--accent-foreground) !important;
   }
 }

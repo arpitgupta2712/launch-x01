@@ -13,6 +13,7 @@ import {
 } from "../../ui/navbar";
 import Navigation from "../../ui/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
+import { ModeToggle } from "../../ui/mode-toggle";
 
 /**
  * Configuration for individual navigation links in the mobile menu
@@ -168,6 +169,9 @@ export default function Navbar({
                 </a>
               ),
             )}
+            
+            {/* 🎨 THEME TOGGLE: Light/Dark mode switcher */}
+            <ModeToggle />
             
             {/* 🎨 MOBILE MENU: Hamburger menu for mobile devices */}
             <Sheet>
