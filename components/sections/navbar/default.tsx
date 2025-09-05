@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 import { ClayGroundsComposite } from "../../logos/claygrounds";
 import { Button, type ButtonProps } from "../../ui/button";
-import { ModeToggle } from "../../ui/mode-toggle";
+// import { ModeToggle } from "../../ui/mode-toggle"; // Disabled - keeping dark theme default
 import {
   Navbar as NavbarComponent,
   NavbarLeft,
@@ -121,6 +121,7 @@ export default function Navbar({
                   key={index}
                   variant={action.variant || "default"}
                   asChild
+                  className="hidden md:flex"
                 >
                   <a href={action.href}>
                     {action.icon}
@@ -140,8 +141,8 @@ export default function Navbar({
               ),
             )}
             
-            {/* 🎨 THEME TOGGLE: Light/Dark mode switcher */}
-            <ModeToggle />
+            {/* 🎨 THEME TOGGLE: Disabled - keeping dark theme default */}
+            {/* <ModeToggle /> */}
             
             {/* 🎨 MOBILE MENU: Hamburger menu for mobile devices */}
             <Sheet>

@@ -113,7 +113,7 @@ export default function AdminStats({
           </div>
         )}
 
-        {/* Stats Grid */}
+        {/* Stats Sentence */}
         {displayItems && displayItems.length > 0 && (
           <div className="flex flex-col items-center gap-6">
             {/* Refresh Button */}
@@ -128,35 +128,27 @@ export default function AdminStats({
               {loading ? 'Refreshing...' : 'Refresh Stats'}
             </Button>
 
-
-            <div className="grid grid-cols-2 gap-12 sm:grid-cols-4">
-              {displayItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-start gap-3 text-left"
-                >
-                  {item.label && (
-                    <div className="text-muted-foreground text-sm font-semibold">
-                      {item.label}
-                    </div>
-                  )}
-                  <div className="flex items-baseline gap-2">
-                    <div className="text-primary text-4xl font-medium drop-shadow-[2px_1px_24px_var(--primary)] transition-all duration-300 sm:text-5xl md:text-6xl">
+            {/* Main Stats Sentence */}
+            <div className="text-center max-w-4xl">
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed">
+                {displayItems.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    {item.label && (
+                      <span className="text-muted-foreground font-medium">
+                        {item.label}
+                      </span>
+                    )}
+                    <span className="text-primary font-bold drop-shadow-[2px_1px_24px_var(--primary)] transition-all duration-300">
                       {item.value}
-                    </div>
+                    </span>
                     {item.suffix && (
-                      <div className="text-foreground text-2xl font-semibold">
+                      <span className="text-foreground font-semibold">
                         {item.suffix}
-                      </div>
+                      </span>
                     )}
                   </div>
-                  {item.description && (
-                    <div className="text-muted-foreground text-sm font-semibold text-pretty">
-                      {item.description}
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {/* Data Freshness Info */}
