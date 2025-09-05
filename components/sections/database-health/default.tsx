@@ -21,6 +21,7 @@ interface ItemProps {
   title: string;
   description: string;
   icon: ReactNode;
+  order?: number;
 }
 
 interface ItemsProps {
@@ -57,27 +58,34 @@ function mapHealthDataToItems(healthData: HealthData): ItemProps[] {
     locations: 'Locations',
     employees: 'Employees',
     tasks: 'Tasks',
-    bookingsPayments: 'Bookings',
+    bookingsPayments: 'Hudle',
     licenses: 'Licenses',
     cashbook: 'Cashbook',
   };
 
   const moduleIcons: Record<string, ReactNode> = {
-    locations: <BuildingIcon className="size-5 stroke-1" />,
-    employees: <UsersIcon className="size-5 stroke-1" />,
-    tasks: <FileTextIcon className="size-5 stroke-1" />,
-    bookingsPayments: <CreditCardIcon className="size-5 stroke-1" />,
-    licenses: <SquarePenIcon className="size-5 stroke-1" />,
-    cashbook: <ActivityIcon className="size-5 stroke-1" />,
+    locations: <BuildingIcon className="size-6 stroke-1" />,
+    employees: <UsersIcon className="size-6 stroke-1" />,
+    tasks: <FileTextIcon className="size-6 stroke-1" />,
+    bookingsPayments: <CreditCardIcon className="size-6 stroke-1" />,
+    licenses: <SquarePenIcon className="size-6 stroke-1" />,
+    cashbook: <ActivityIcon className="size-6 stroke-1" />,
+  };
+
+  // Custom order mapping for grid display
+  const moduleOrder: Record<string, number> = {
+    locations: 1,
+    licenses: 2,  // Licenses as second card
+    employees: 3,
+    tasks: 4,
+    bookingsPayments: 5,
+    cashbook: 6,
   };
 
   const items: ItemProps[] = [];
 
   Object.entries(healthData.database.modules).forEach(([name, module]: [string, HealthModule]) => {
-    const displayName = nameMapping[name] || name
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
-      .trim();
+    const displayName = nameMapping[name];
     
     const recordCount = module.recordCount ? 
       (module.recordCount >= 1000 ? 
@@ -91,28 +99,32 @@ function mapHealthDataToItems(healthData: HealthData): ItemProps[] {
     items.push({
       title: displayName,
       description: `${recordCount} records • ${status}`,
-      icon: moduleIcons[name] || <ActivityIcon className="size-5 stroke-1" />,
+      icon: moduleIcons[name] || <ActivityIcon className="size-6 stroke-1" />,
+      order: moduleOrder[name] || 999, // Default to end if not in order mapping
     });
 
     // Add separate date cards for cashbook and bookingsPayments
     if (name === 'cashbook' && module.latestTransactionDate) {
       items.push({
-        title: `${displayName} Latest`,
+        title: displayName,
         description: `Last transaction: ${module.latestTransactionDate}`,
-        icon: <ActivityIcon className="size-5 stroke-1" />,
+        icon: <ActivityIcon className="size-6 stroke-1" />,
+        order: moduleOrder[name] + 0.5, // Place after main card
       });
     }
     
     if (name === 'bookingsPayments' && module.latestSlotDate) {
       items.push({
-        title: `${displayName} Latest`,
+        title: displayName,
         description: `Last slot: ${module.latestSlotDate}`,
-        icon: <CreditCardIcon className="size-5 stroke-1" />,
+        icon: <CreditCardIcon className="size-6 stroke-1" />,
+        order: moduleOrder[name] + 0.5, // Place after main card
       });
     }
   });
 
-  return items;
+  // Sort items by custom order
+  return items.sort((a, b) => (a.order || 999) - (b.order || 999));
 }
 
 export default function Items({
@@ -171,29 +183,81 @@ export default function Items({
         )}
         
         {healthItems.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                         {healthItems.map((item, index) => (
-               <Card key={index} className="transition-all hover:shadow-md">
-                 <CardHeader className="pb-3 text-center">
-                   <CardTitle className="flex items-center justify-center gap-2 text-base">
-                     <div className="flex items-center">
-                       {item.icon}
-                     </div>
-                     {item.title}
-                   </CardTitle>
-                 </CardHeader>
-                 <CardContent className="pt-0 text-center">
-                   <CardDescription className="text-sm">
-                     {item.description}
-                   </CardDescription>
-                 </CardContent>
-               </Card>
-             ))}
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+            {healthItems.map((item, index) => {
+              // Parse the description to extract record count and status
+              const isLatestCard = item.description.includes('Last transaction:') || item.description.includes('Last slot:');
+              const parts = item.description.split(' • ');
+              const recordPart = parts[0];
+              const statusPart = parts[1];
+              
+              return (
+                <Card key={index} className="group transition-all duration-300 hover:shadow-lg hover:scale-105 border-2 hover:border-primary/20">
+                  <CardHeader className="pb-4 text-center space-y-3">
+                    <div className="flex justify-center">
+                      <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                        {item.icon}
+                      </div>
+                    </div>
+                    <CardTitle className="text-lg font-semibold">
+                      {item.title}
+                    </CardTitle>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0 pb-6 text-center space-y-3">
+                    {isLatestCard ? (
+                      <div className="space-y-2">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-primary drop-shadow-sm">
+                            {(() => {
+                              const dateStr = item.description.replace('Last transaction: ', '').replace('Last slot: ', '');
+                              const date = new Date(dateStr);
+                              const now = new Date();
+                              const diffTime = Math.abs(now.getTime() - date.getTime());
+                              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                              return diffDays;
+                            })()}
+                          </div>
+                          <div className="text-xs text-muted-foreground font-medium">
+                            days ago
+                          </div>
+                        </div>
+                        
+                        <Badge 
+                          variant="secondary" 
+                          className="text-xs font-medium"
+                        >
+                          Last updated
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-primary drop-shadow-sm">
+                            {recordPart.replace(' records', '')}
+                          </div>
+                          <div className="text-xs text-muted-foreground font-medium">
+                            records
+                          </div>
+                        </div>
+                        
+                        <Badge 
+                          variant={statusPart === 'Active' ? 'secondary' : 'destructive'} 
+                          className="text-xs font-medium"
+                        >
+                          {statusPart}
+                        </Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
         
         {healthData && (
-          <div className="text-center text-xs text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg">
+          <div className="hidden sm:block text-center text-xs text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg">
             <div className="flex flex-wrap items-center justify-center gap-2">
               {(() => {
                 const cashbookDate = healthData.database.modules.cashbook?.latestTransactionDate;
@@ -209,14 +273,14 @@ export default function Items({
                   return (
                     <>
                       <span>System Status:</span>
-                      <Badge variant="default" size="sm">
+                      <Badge variant="default" size="default">
                         {healthData.status}
                       </Badge>
                       <span>•</span>
                       <span>Date Sync:</span>
                       <Badge 
                         variant={isAlert ? "destructive" : "default"} 
-                        size="sm"
+                        size="default"
                       >
                         {isAlert ? 'ALERT' : 'OK'}
                       </Badge>
