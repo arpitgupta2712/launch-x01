@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 
-import { useCompanyData } from "@/lib/hooks/use-company-data";
+import { useOptimizedCompanyData } from "@/lib/hooks/use-optimized-data";
 import { generateCompanyFAQs } from "@/lib/utils/company-faq-generator";
 
 import {
@@ -30,7 +30,7 @@ export default function FAQ({
   items = false, // Default to false to use dynamic data
   className,
 }: FAQProps) {
-  const { companies, loading, error } = useCompanyData();
+  const { companies, loading, error } = useOptimizedCompanyData();
 
   // Generate FAQ items from company data if no custom items provided
   const faqItems = items !== false ? items : generateCompanyFAQs(companies);

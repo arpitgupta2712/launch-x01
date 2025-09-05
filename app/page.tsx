@@ -8,10 +8,12 @@ import Navbar from "../components/sections/navbar/default";
 import Pricing from "../components/sections/pricing/default";
 import SystemHealth from "../components/sections/system-health/default";
 import { Divider } from "../components/ui/divider";
+import { PriorityLoader } from "../components/ui/priority-loader";
 
 export default function Home() {
   return (
     <main className="min-h-screen w-full bg-background text-foreground">
+      <PriorityLoader />
       <Navbar />
       <Hero />
       <AdminStats />

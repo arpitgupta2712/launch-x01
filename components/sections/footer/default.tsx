@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 
 import { siteConfig } from "@/config/site";
-import { useCompanyData } from "@/lib/hooks/use-company-data";
+import { useOptimizedCompanyData } from "@/lib/hooks/use-optimized-data";
 import { cn } from "@/lib/utils";
 
 import { ClayGroundsComposite } from "../../logos/claygrounds";
@@ -47,7 +47,7 @@ export default function FooterSection({
   showModeToggle = false,
   className,
 }: FooterProps) {
-  const { companies, loading } = useCompanyData();
+  const { companies, loading } = useOptimizedCompanyData();
 
   // Function to shorten company names for better display
   const shortenCompanyName = (name: string): string => {

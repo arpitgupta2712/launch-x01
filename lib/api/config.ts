@@ -20,6 +20,19 @@ export const API_CONFIG = {
   },
   corsMode: 'cors' as RequestMode,
   defaultRefreshInterval: 30000, // 30 seconds
+  // Performance optimization settings
+  cache: {
+    duration: 5 * 60 * 1000, // 5 minutes
+    maxRetries: 3,
+    retryDelay: 1000,
+  },
+  // Loading priorities (1 = highest priority)
+  priorities: {
+    stats: 1,     // Admin stats for main dashboard (appears first)
+    venues: 2,    // Venues data (appears second)
+    companies: 3, // Company info (FAQ, Footer appear third)
+    health: 4,    // Database health last (appears last)
+  },
 } as const;
 
 export type ApiConfig = typeof API_CONFIG;

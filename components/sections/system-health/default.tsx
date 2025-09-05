@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
 
-import { useVenuesData } from "@/lib/hooks/use-venues-data";
+import { useOptimizedVenuesData } from "@/lib/hooks/use-optimized-data";
 import { cn } from "@/lib/utils";
 
 import { Badge } from "../../ui/badge";
@@ -116,7 +116,7 @@ export default function HealthDashboard({
   className,
 }: HealthDashboardProps) {
   // 🎨 API DATA HOOK: Use centralized venues data hook
-  const { data: venuesData, loading: isLoading, error, refetch, lastRefresh } = useVenuesData();
+  const { data: venuesData, loading: isLoading, error, refetch, lastRefresh } = useOptimizedVenuesData();
   const [realMetrics, setRealMetrics] = useState<HealthMetric[] | null>(null);
 
   // 🎨 FALLBACK METRICS: Obviously rounded values to identify when API is not working

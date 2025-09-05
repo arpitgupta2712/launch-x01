@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { ReactNode } from "react";
 
-import { useHealthData } from "@/lib/hooks/use-health-data";
+import { useOptimizedHealthData } from "@/lib/hooks/use-optimized-data";
 
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -131,7 +131,7 @@ export default function Items({
   title = "System Health Dashboard",
   className,
 }: ItemsProps) {
-  const { data: healthData, loading: healthLoading, error: healthError, refetch } = useHealthData();
+  const { data: healthData, loading: healthLoading, error: healthError, refetch } = useOptimizedHealthData();
 
   // Only show health data items
   const healthItems = healthData ? mapHealthDataToItems(healthData) : [];

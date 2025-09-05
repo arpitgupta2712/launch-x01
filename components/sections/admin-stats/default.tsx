@@ -2,7 +2,7 @@
 
 import { RefreshCw } from "lucide-react";
 
-import { useStatsData } from "@/lib/hooks/use-stats-data";
+import { useOptimizedStatsData } from "@/lib/hooks/use-optimized-data";
 
 import { Button } from "../../ui/button";
 import { Section } from "../../ui/section";
@@ -23,7 +23,7 @@ export default function AdminStats({
   items,
   className,
 }: StatsProps) {
-  const { data: statsData, loading, error, refetch } = useStatsData();
+  const { data: statsData, loading, error, refetch } = useOptimizedStatsData();
 
   // Generate stats items from API data
   const generateStatsItems = (): StatItemProps[] => {
