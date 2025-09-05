@@ -1,22 +1,38 @@
-/* Glass effects */
+/**
+ * 🎨 CUSTOM UTILITY CLASSES
+ * 
+ * This file contains custom Tailwind utility classes for glassmorphism effects
+ * and fade animations. These utilities provide consistent visual effects
+ * throughout the application.
+ * 
+ * 🎨 BRAND CUSTOMIZATION: You can modify these effects to match your brand's visual style
+ */
+
+/* 🎨 GLASSMORPHISM EFFECTS: Modern glass-like visual effects */
 @utility glass-1 {
+  /* 🎨 LIGHT GLASS: Subtle glass effect with card colors */
   @apply border-border from-card/80 to-card/40 dark:border-border/10 dark:border-b-border/5 dark:border-t-border/20 dark:from-card/5 dark:to-card/0 border bg-linear-to-b;
 }
 @utility glass-2 {
+  /* 🎨 MEDIUM GLASS: More opaque glass effect */
   @apply border-border from-card/100 to-card/80 dark:border-border/10 dark:border-b-border/5 dark:border-t-border/20 dark:from-card/10 dark:to-card/5 border bg-linear-to-b;
 }
 @utility glass-3 {
+  /* 🎨 ACCENT GLASS: Glass effect with primary color accents */
   @apply border-border from-card/30 to-card/20 dark:border-border/10 dark:border-t-border/20 dark:border-b-border/5 dark:from-primary/5 dark:to-primary/2 border bg-linear-to-b;
 }
 @utility glass-4 {
+  /* 🎨 STRONG GLASS: Strong glass effect with input border */
   @apply border-border border-b-input/90 from-card/60 to-card/20 dark:border-border/10 dark:border-t-border/30 dark:from-primary/10 dark:to-primary/5 border bg-linear-to-b dark:border-b-0;
 }
 @utility glass-5 {
+  /* 🎨 INTENSE GLASS: Most intense glass effect */
   @apply border-border border-b-input from-card/100 to-card/20 dark:border-border/10 dark:border-t-border/30 dark:from-primary/15 dark:to-primary/5 border bg-linear-to-b dark:border-b-0;
 }
 
-/* Fade effects */
+/* 🎨 FADE EFFECTS: Gradient mask effects for smooth content transitions */
 @utility fade-x {
+  /* 🎨 HORIZONTAL FADE: Fades content from both left and right edges */
   mask-image: linear-gradient(
     to right,
     transparent 0%,
@@ -26,6 +42,7 @@
   );
 }
 @utility fade-y {
+  /* 🎨 VERTICAL FADE: Fades content from both top and bottom edges */
   mask-image: linear-gradient(
     to top,
     transparent 0%,
@@ -35,26 +52,34 @@
   );
 }
 @utility fade-top {
+  /* 🎨 TOP FADE: Fades content from top edge */
   mask-image: linear-gradient(to bottom, transparent 0%, black 35%);
 }
 @utility fade-bottom {
+  /* 🎨 BOTTOM FADE: Fades content from bottom edge */
   mask-image: linear-gradient(to top, transparent 0%, black 35%);
 }
 @utility fade-top-lg {
+  /* 🎨 LARGE TOP FADE: Stronger fade from top edge */
   mask-image: linear-gradient(to bottom, transparent 15%, black 100%);
 }
 @utility fade-bottom-lg {
+  /* 🎨 LARGE BOTTOM FADE: Stronger fade from bottom edge */
   mask-image: linear-gradient(to top, transparent 15%, black 100%);
 }
 @utility fade-left {
+  /* 🎨 LEFT FADE: Fades content from left edge */
   mask-image: linear-gradient(to right, transparent 0%, black 35%);
 }
 @utility fade-right {
+  /* 🎨 RIGHT FADE: Fades content from right edge */
   mask-image: linear-gradient(to left, transparent 0%, black 35%);
 }
 @utility fade-left-lg {
+  /* 🎨 LARGE LEFT FADE: Stronger fade from left edge */
   mask-image: linear-gradient(to right, transparent 15%, black 100%);
 }
 @utility fade-right-lg {
+  /* 🎨 LARGE RIGHT FADE: Stronger fade from right edge */
   mask-image: linear-gradient(to left, transparent 15%, black 100%);
 }

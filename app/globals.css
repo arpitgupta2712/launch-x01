@@ -1,3 +1,17 @@
+/**
+ * 🎨 GLOBAL STYLES & THEME CONFIGURATION
+ * 
+ * This file contains the main color system, theme configuration, and global styles
+ * for the application. It uses CSS custom properties (variables) for theming and
+ * supports both light and dark modes.
+ * 
+ * 🎨 BRAND CUSTOMIZATION GUIDE:
+ * - Main brand colors: --brand and --brand-foreground (lines 113-114, 162-163)
+ * - Primary colors: --primary and --primary-foreground (lines 123-124, 172-173)
+ * - Background colors: --background and --foreground (lines 117-118, 166-167)
+ * - All colors use OKLCH color space for better perceptual uniformity
+ */
+
 @import "tailwindcss";
 @import "../styles/utils.css";
 
@@ -5,13 +19,26 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/**
+ * 🎨 TAILWIND THEME CONFIGURATION
+ * 
+ * Maps CSS custom properties to Tailwind's color system.
+ * This allows using semantic color names in components (e.g., bg-primary, text-foreground).
+ */
 @theme inline {
+  /* 🎨 BRAND COLORS: Your main brand identity colors */
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  
+  /* 🎨 LIGHT/ILLUSTRATION COLORS: Used for light effects and illustrations */
   --color-light: var(--light);
   --color-light-foreground: var(--light-foreground);
+  
+  /* 🎨 CORE UI COLORS: Background and text colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  
+  /* 🎨 SIDEBAR COLORS: Sidebar-specific color variants */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -20,38 +47,59 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  
+  /* 🎨 CHART COLORS: Data visualization colors */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  
+  /* 🎨 INTERACTIVE ELEMENT COLORS: Form inputs, borders, focus rings */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  
+  /* 🎨 STATE COLORS: Success, warning, error states */
   --color-destructive-foreground: var(--destructive-foreground);
   --color-destructive: var(--destructive);
+  
+  /* 🎨 ACCENT COLORS: Secondary interactive elements */
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  
+  /* 🎨 MUTED COLORS: Subtle text and backgrounds */
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
+  
+  /* 🎨 SECONDARY COLORS: Secondary UI elements */
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
+  
+  /* 🎨 PRIMARY COLORS: Main interactive elements (buttons, links) */
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  
+  /* 🎨 OVERLAY COLORS: Popovers, modals, dropdowns */
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
+  
+  /* 🎨 CARD COLORS: Card backgrounds and text */
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
+  /* 🎨 TYPOGRAPHY: Font family configuration */
   --font-sans: var(--font-inter);
   --font-mono: var(--font-ibm-plex-mono);
 
+  /* 🎨 BORDER RADIUS: Consistent border radius system */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
 
+  /* 🎨 LAYOUT: Container max-width */
   --spacing-container: 1280px;
   --spacing-container-lg: 1536px;
 
@@ -108,107 +156,174 @@
   }
 }
 
+/**
+ * 🎨 LIGHT THEME COLOR DEFINITIONS
+ * 
+ * This section defines all color values for the light theme using OKLCH color space.
+ * OKLCH provides better perceptual uniformity and more predictable color mixing.
+ * 
+ * 🎨 BRAND CUSTOMIZATION: Change these values to match your brand colors
+ */
 :root {
-  /* Accent colors */
-  --brand: oklch(66.5% 0.1804 47.04);
-  --brand-foreground: oklch(75.77% 0.159 55.91);
+  /* 🎨 BRAND COLORS: Your main brand identity (CHANGE THESE FOR YOUR BRAND) */
+  --brand: oklch(66.5% 0.1804 47.04); /* 🎨 Main brand color - currently orange/yellow */
+  --brand-foreground: oklch(75.77% 0.159 55.91); /* 🎨 Text color on brand background */
 
-  /* Customized shadcn/ui colors */
-  --background: oklch(97.65% 0.001 17.18);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(66.5% 0.1804 47.04);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.927 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  /* 🎨 CORE UI COLORS: Background and text colors */
+  --background: oklch(97.65% 0.001 17.18); /* 🎨 Main background color - very light gray */
+  --foreground: oklch(0.141 0.005 285.823); /* 🎨 Main text color - very dark gray */
+  
+  /* 🎨 CARD COLORS: Card backgrounds and text */
+  --card: oklch(1 0 0); /* 🎨 Card background - pure white */
+  --card-foreground: oklch(0.141 0.005 285.823); /* 🎨 Card text - same as foreground */
+  
+  /* 🎨 OVERLAY COLORS: Popovers, modals, dropdowns */
+  --popover: oklch(1 0 0); /* 🎨 Popover background - pure white */
+  --popover-foreground: oklch(0.141 0.005 285.823); /* 🎨 Popover text */
+  
+  /* 🎨 PRIMARY COLORS: Main interactive elements (buttons, links) */
+  --primary: oklch(66.5% 0.1804 47.04); /* 🎨 Primary color - same as brand */
+  --primary-foreground: oklch(0.985 0 0); /* 🎨 Text on primary - near white */
+  
+  /* 🎨 SECONDARY COLORS: Secondary UI elements */
+  --secondary: oklch(0.967 0.001 286.375); /* 🎨 Secondary background - light gray */
+  --secondary-foreground: oklch(0.21 0.006 285.885); /* 🎨 Secondary text - dark gray */
+  
+  /* 🎨 MUTED COLORS: Subtle text and backgrounds */
+  --muted: oklch(0.967 0.001 286.375); /* 🎨 Muted background - same as secondary */
+  --muted-foreground: oklch(0.552 0.016 285.938); /* 🎨 Muted text - medium gray */
+  
+  /* 🎨 ACCENT COLORS: Secondary interactive elements */
+  --accent: oklch(0.927 0.001 286.375); /* 🎨 Accent background - slightly darker than muted */
+  --accent-foreground: oklch(0.21 0.006 285.885); /* 🎨 Accent text - same as secondary */
+  
+  /* 🎨 STATE COLORS: Error/destructive states */
+  --destructive: oklch(0.577 0.245 27.325); /* 🎨 Destructive color - red */
+  --destructive-foreground: oklch(0.577 0.245 27.325); /* 🎨 Destructive text - same as destructive */
+  
+  /* 🎨 INTERACTIVE ELEMENT COLORS: Form inputs, borders, focus rings */
+  --border: oklch(0.92 0.004 286.32); /* 🎨 Border color - light gray */
+  --input: oklch(0.92 0.004 286.32); /* 🎨 Input background - same as border */
+  --ring: oklch(0.705 0.015 286.067); /* 🎨 Focus ring color - medium gray */
+  
+  /* 🎨 CHART COLORS: Data visualization colors */
+  --chart-1: oklch(0.646 0.222 41.116); /* 🎨 Chart color 1 - orange */
+  --chart-2: oklch(0.6 0.118 184.704); /* 🎨 Chart color 2 - blue */
+  --chart-3: oklch(0.398 0.07 227.392); /* 🎨 Chart color 3 - dark blue */
+  --chart-4: oklch(0.828 0.189 84.429); /* 🎨 Chart color 4 - green */
+  --chart-5: oklch(0.769 0.188 70.08); /* 🎨 Chart color 5 - yellow-green */
+  
+  /* 🎨 LAYOUT: Border radius */
+  --radius: 0.625rem; /* 🎨 Base border radius - 10px */
+  
+  /* 🎨 SIDEBAR COLORS: Sidebar-specific color variants */
+  --sidebar: oklch(0.985 0 0); /* 🎨 Sidebar background - near white */
+  --sidebar-foreground: oklch(0.141 0.005 285.823); /* 🎨 Sidebar text - same as foreground */
+  --sidebar-primary: oklch(0.21 0.006 285.885); /* 🎨 Sidebar primary - dark gray */
+  --sidebar-primary-foreground: oklch(0.985 0 0); /* 🎨 Sidebar primary text - near white */
+  --sidebar-accent: oklch(0.967 0.001 286.375); /* 🎨 Sidebar accent - light gray */
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885); /* 🎨 Sidebar accent text - dark gray */
+  --sidebar-border: oklch(0.92 0.004 286.32); /* 🎨 Sidebar border - same as border */
+  --sidebar-ring: oklch(0.705 0.015 286.067); /* 🎨 Sidebar focus ring - same as ring */
 
-  /* Illustrations colors */
-  --light: var(--brand);
-  --light-foreground: var(--brand-foreground);
+  /* 🎨 LIGHT/ILLUSTRATION COLORS: Used for light effects and illustrations */
+  --light: var(--brand); /* 🎨 Light effect color - same as brand */
+  --light-foreground: var(--brand-foreground); /* 🎨 Light effect text - same as brand foreground */
 
-  /* Shadows */
-  --shadow: #00000008;
-  --shadow-strong: #00000008;
+  /* 🎨 SHADOWS: Drop shadow colors */
+  --shadow: #00000008; /* 🎨 Light shadow - very transparent black */
+  --shadow-strong: #00000008; /* 🎨 Strong shadow - same as light shadow */
 }
 
+/**
+ * 🎨 DARK THEME COLOR DEFINITIONS
+ * 
+ * This section defines all color values for the dark theme using OKLCH color space.
+ * Dark theme colors are designed to provide good contrast and readability in low-light conditions.
+ * 
+ * 🎨 BRAND CUSTOMIZATION: Change these values to match your brand colors for dark mode
+ */
 .dark {
-  /* Accent colors */
-  --brand: oklch(83.6% 0.1177 66.87);
-  --brand-foreground: oklch(75.77% 0.159 55.91);
+  /* 🎨 BRAND COLORS: Your main brand identity for dark mode (CHANGE THESE FOR YOUR BRAND) */
+  --brand: oklch(83.6% 0.1177 66.87); /* 🎨 Main brand color - brighter for dark mode */
+  --brand-foreground: oklch(75.77% 0.159 55.91); /* 🎨 Text color on brand background */
 
-  /* Customized shadcn/ui colors */
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.141 0.005 285.823);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.141 0.005 285.823);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.885 0.006 286.033);
-  --input: oklch(0.274 0.006 286.033);
-  --ring: oklch(0.442 0.017 285.786);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.442 0.017 285.786);
+  /* 🎨 CORE UI COLORS: Background and text colors for dark mode */
+  --background: oklch(0.141 0.005 285.823); /* 🎨 Main background - very dark gray */
+  --foreground: oklch(0.985 0 0); /* 🎨 Main text - near white */
+  
+  /* 🎨 CARD COLORS: Card backgrounds and text for dark mode */
+  --card: oklch(0.141 0.005 285.823); /* 🎨 Card background - same as background */
+  --card-foreground: oklch(0.985 0 0); /* 🎨 Card text - near white */
+  
+  /* 🎨 OVERLAY COLORS: Popovers, modals, dropdowns for dark mode */
+  --popover: oklch(0.141 0.005 285.823); /* 🎨 Popover background - same as background */
+  --popover-foreground: oklch(0.985 0 0); /* 🎨 Popover text - near white */
+  
+  /* 🎨 PRIMARY COLORS: Main interactive elements for dark mode */
+  --primary: oklch(0.985 0 0); /* 🎨 Primary color - near white (inverted from light mode) */
+  --primary-foreground: oklch(0.21 0.006 285.885); /* 🎨 Text on primary - dark gray */
+  
+  /* 🎨 SECONDARY COLORS: Secondary UI elements for dark mode */
+  --secondary: oklch(0.274 0.006 286.033); /* 🎨 Secondary background - dark gray */
+  --secondary-foreground: oklch(0.985 0 0); /* 🎨 Secondary text - near white */
+  
+  /* 🎨 MUTED COLORS: Subtle text and backgrounds for dark mode */
+  --muted: oklch(0.274 0.006 286.033); /* 🎨 Muted background - same as secondary */
+  --muted-foreground: oklch(0.705 0.015 286.067); /* 🎨 Muted text - medium gray */
+  
+  /* 🎨 ACCENT COLORS: Secondary interactive elements for dark mode */
+  --accent: oklch(0.274 0.006 286.033); /* 🎨 Accent background - same as secondary */
+  --accent-foreground: oklch(0.985 0 0); /* 🎨 Accent text - near white */
+  
+  /* 🎨 STATE COLORS: Error/destructive states for dark mode */
+  --destructive: oklch(0.396 0.141 25.723); /* 🎨 Destructive color - darker red */
+  --destructive-foreground: oklch(0.637 0.237 25.331); /* 🎨 Destructive text - lighter red */
+  
+  /* 🎨 INTERACTIVE ELEMENT COLORS: Form inputs, borders, focus rings for dark mode */
+  --border: oklch(0.885 0.006 286.033); /* 🎨 Border color - light gray */
+  --input: oklch(0.274 0.006 286.033); /* 🎨 Input background - dark gray */
+  --ring: oklch(0.442 0.017 285.786); /* 🎨 Focus ring color - medium gray */
+  
+  /* 🎨 CHART COLORS: Data visualization colors for dark mode */
+  --chart-1: oklch(0.488 0.243 264.376); /* 🎨 Chart color 1 - purple */
+  --chart-2: oklch(0.696 0.17 162.48); /* 🎨 Chart color 2 - teal */
+  --chart-3: oklch(0.769 0.188 70.08); /* 🎨 Chart color 3 - yellow-green */
+  --chart-4: oklch(0.627 0.265 303.9); /* 🎨 Chart color 4 - pink */
+  --chart-5: oklch(0.645 0.246 16.439); /* 🎨 Chart color 5 - orange */
+  
+  /* 🎨 SIDEBAR COLORS: Sidebar-specific color variants for dark mode */
+  --sidebar: oklch(0.21 0.006 285.885); /* 🎨 Sidebar background - darker than main background */
+  --sidebar-foreground: oklch(0.985 0 0); /* 🎨 Sidebar text - near white */
+  --sidebar-primary: oklch(0.488 0.243 264.376); /* 🎨 Sidebar primary - purple */
+  --sidebar-primary-foreground: oklch(0.985 0 0); /* 🎨 Sidebar primary text - near white */
+  --sidebar-accent: oklch(0.274 0.006 286.033); /* 🎨 Sidebar accent - same as secondary */
+  --sidebar-accent-foreground: oklch(0.985 0 0); /* 🎨 Sidebar accent text - near white */
+  --sidebar-border: oklch(0.274 0.006 286.033); /* 🎨 Sidebar border - same as secondary */
+  --sidebar-ring: oklch(0.442 0.017 285.786); /* 🎨 Sidebar focus ring - same as ring */
 
-  /* Illustrations colors */
-  --light: var(--foreground);
-  --light-foreground: var(--foreground);
+  /* 🎨 LIGHT/ILLUSTRATION COLORS: Used for light effects and illustrations in dark mode */
+  --light: var(--foreground); /* 🎨 Light effect color - same as foreground */
+  --light-foreground: var(--foreground); /* 🎨 Light effect text - same as foreground */
 
-  /* Shadows */
-  --shadow: #00000020;
-  --shadow-strong: #00000088;
+  /* 🎨 SHADOWS: Drop shadow colors for dark mode */
+  --shadow: #00000020; /* 🎨 Light shadow - more opaque black */
+  --shadow-strong: #00000088; /* 🎨 Strong shadow - very opaque black */
 }
 
+/**
+ * 🎨 BASE STYLES
+ * 
+ * Global base styles that apply to all elements.
+ * These ensure consistent styling across the application.
+ */
 @layer base {
+  /* 🎨 GLOBAL BORDER: Apply consistent border color to all elements */
   * {
     @apply border-border;
   }
+  
+  /* 🎨 BODY STYLES: Set default background and text colors */
   body {
     @apply bg-background text-foreground;
   }
