@@ -1,6 +1,9 @@
+"use client";
+
 import { ReactNode } from "react";
 
 import { siteConfig } from "@/config/site";
+import { useCompanyData } from "@/lib/hooks/use-company-data";
 import { cn } from "@/lib/utils";
 
 import { ClayGroundsComposite } from "../../logos/claygrounds";
@@ -35,7 +38,56 @@ interface FooterProps {
 export default function FooterSection({
   logo = <ClayGroundsComposite logomarkVariant="white" logotypeVariant="white" logomarkWidth={24} logomarkHeight={24} logotypeWidth={100} logotypeHeight={24} gap="gap-2" />,
   name = "",
-  columns = [
+  columns,
+  copyright = "© 2019 ClayGrounds. All rights reserved",
+  policies = [
+    { text: "Privacy Policy", href: siteConfig.url },
+    { text: "Terms of Service", href: siteConfig.url },
+  ],
+  showModeToggle = false,
+  className,
+}: FooterProps) {
+  const { companies, loading } = useCompanyData();
+
+  // Function to shorten company names for better display
+  const shortenCompanyName = (name: string): string => {
+    return name
+      .replace(/\s+(Pvt\s+Ltd|Private\s+Limited|Ltd|Limited|Inc|Incorporated|Corp|Corporation|LLC|LLP)\s*$/i, '')
+      .replace(/\s+(India|USA|US|United\s+States|UK|United\s+Kingdom|Canada|Australia|Germany|France|Japan|China)\s*$/i, '')
+      .replace(/\s+(Solutions|Technologies|Technology|Innovation|Innovations|Systems|Services|Group|Holdings|Enterprises|Ventures)\s*$/i, '')
+      .trim();
+  };
+
+  // Create dynamic company links based on API data
+  const getCompanyLinks = (): FooterLink[] => {
+    if (loading || !companies || companies.length === 0) {
+      // Fallback links while loading or if no data
+      return [
+        { text: "About", href: "https://www.claygrounds.com" },
+        { text: "ClayGrounds", href: "https://www.claygrounds.com" },
+      ];
+    }
+
+    const links: FooterLink[] = [
+      { text: "About", href: "https://www.claygrounds.com" },
+    ];
+
+    // Add company names as links (limit to 2 companies to keep it clean)
+    companies.slice(0, 2).forEach((company) => {
+      if (company?.name) {
+        const shortName = shortenCompanyName(company.name);
+        links.push({
+          text: shortName,
+          href: company.email ? `mailto:${company.email}` : "https://www.goaltech.in"
+        });
+      }
+    });
+
+    return links;
+  };
+
+  // Default columns with dynamic company links
+  const defaultColumns: FooterColumnProps[] = [
     {
       title: "Product",
       links: [
@@ -45,11 +97,7 @@ export default function FooterSection({
     },
     {
       title: "Company",
-      links: [
-        { text: "About", href: "https://www.goaltech.in" },
-        { text: "Careers", href: "https://www.goaltech.in" },
-        { text: "Blog", href: "https://www.goaltech.in" },
-      ],
+      links: getCompanyLinks(),
     },
     {
       title: "Contact",
@@ -59,15 +107,9 @@ export default function FooterSection({
         { text: "Github", href: "https://github.com/arpitgupta2712" },
       ],
     },
-  ],
-  copyright = "© 2019 ClayGrounds. All rights reserved",
-  policies = [
-    { text: "Privacy Policy", href: siteConfig.url },
-    { text: "Terms of Service", href: siteConfig.url },
-  ],
-  showModeToggle = false,
-  className,
-}: FooterProps) {
+  ];
+
+  const finalColumns = columns || defaultColumns;
   return (
     <footer className={cn("bg-background w-full px-4", className)}>
       <div className="max-w-container mx-auto">
@@ -79,7 +121,7 @@ export default function FooterSection({
                 <h3 className="text-xl font-bold">{name}</h3>
               </div>
             </FooterColumn>
-            {columns.map((column, index) => (
+            {finalColumns.map((column, index) => (
               <FooterColumn key={index}>
                 <h3 className="text-md pt-1 font-semibold">{column.title}</h3>
                 {column.links.map((link, linkIndex) => (
