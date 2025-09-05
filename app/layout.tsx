@@ -15,21 +15,21 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.getStartedUrl),
   description: siteConfig.description,
   keywords: [
-    "Landing page template",
-    "Components",
-    "Shadcn",
-    "Next.js",
-    "React",
-    "Tailwind CSS",
-    "Radix UI",
+    "ClayGrounds",
+    "Clay shooting",
+    "Outdoor sports",
+    "Recreational activities",
+    "Clay sports",
+    "Shooting range",
+    "Outdoor adventures",
   ],
   authors: [
     {
-      name: "Mikolaj Dobrucki",
-      url: "https://mikolajdobrucki.com",
+      name: "ClayGrounds",
+      url: "https://www.claygrounds.com",
     },
   ],
-  creator: "mikolajdobrucki",
+  creator: "ClayGrounds",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -51,10 +51,10 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: "@mikolajdobrucki",
+    creator: "@claygrounds",
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.png",
     apple: "/apple-touch-icon.png",
   },
 };
@@ -66,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" style={{ colorScheme: "dark" }} className="dark">
-      <body className={`${inter.className} bg-background antialiased`}>
+      <body className={`${inter.className} bg-background antialiased overflow-x-hidden`}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

@@ -11,7 +11,7 @@ import { Divider } from "../components/ui/divider";
 
 export default function Home() {
   return (
-    <main className="min-h-screen w-full overflow-hidden bg-background text-foreground">
+    <main className="min-h-screen w-full bg-background text-foreground">
       <Navbar />
       <Hero />
       <AdminStats />

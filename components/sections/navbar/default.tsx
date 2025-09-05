@@ -91,9 +91,9 @@ export default function Navbar({
 }: NavbarProps) {
   return (
     // 🎨 MAIN HEADER CONTAINER: Sticky header with backdrop blur effect
-    <header className={cn("sticky top-0 z-50 -mb-4 px-4 pb-4", className)}>
+    <header className={cn("sticky top-0 z-50 w-full -mb-4 px-4 pb-4", className)} style={{ position: 'sticky', top: 0 }}>
       {/* 🎨 BACKDROP BLUR: Creates the glassmorphism effect behind the navbar */}
-      <div className="fade-bottom bg-background/15 absolute left-0 h-24 w-full backdrop-blur-lg"></div>
+      <div className="fade-bottom bg-background/15 absolute inset-0 h-28 w-full backdrop-blur-lg"></div>
       
       {/* 🎨 CONTENT CONTAINER: Max-width container for responsive layout */}
       <div className="max-w-container relative mx-auto">

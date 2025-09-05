@@ -132,10 +132,10 @@ export default function Hero({
   badge = (
     <Badge variant="outline" className="animate-appear">
       <span className="text-muted-foreground">
-        New version of Launch UI is out!
+        Ready for Legends Cup 2025!
       </span>
       <a href={siteConfig.getStartedUrl} className="flex items-center gap-1">
-        Get started
+        Get Updates
         <ArrowRightIcon className="size-3" />
       </a>
     </Badge>
