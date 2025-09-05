@@ -10,7 +10,9 @@ export const API_CONFIG = {
   endpoints: {
     stats: '/api/hudle/admins/status',
     health: '/api/db/health',
-    venues: '/api/hudle/global/data-health'
+    venues: '/api/hudle/global/data-health',
+    company1: '/api/hudle/users/search/phone/9999099867?includes=business_profile',
+    company2: '/api/hudle/users/search/phone/9910545678?includes=business_profile'
   },
   defaultHeaders: {
     'Accept': 'application/json',
