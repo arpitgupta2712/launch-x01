@@ -7,6 +7,7 @@ import Navbar from "../components/sections/navbar/default";
 import Pricing from "../components/sections/pricing/default";
 import Stats from "../components/sections/stats/default";
 import SystemHealth from "../components/sections/system-health/default";
+import { Divider } from "../components/ui/divider";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <DatabaseHealth />
+      <Divider variant="arrow" size="sm" />
       <SystemHealth />
       <Stats />
       <Pricing />

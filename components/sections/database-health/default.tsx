@@ -12,7 +12,9 @@ import { ReactNode } from "react";
 
 import { useHealthData } from "@/lib/hooks/use-health-data";
 
-import { Item, ItemDescription, ItemIcon, ItemTitle } from "../../ui/item";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 import { Section } from "../../ui/section";
 
 interface ItemProps {
@@ -131,14 +133,16 @@ export default function Items({
           </h2>
           
           {/* Refresh Button */}
-          <button
+          <Button
             onClick={refetch}
             disabled={healthLoading}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            size="sm"
+            className="gap-2"
+            variant="secondary"
           >
             <ActivityIcon className={`size-4 ${healthLoading ? 'animate-spin' : ''}`} />
             {healthLoading ? 'Refreshing...' : 'Refresh Data'}
-          </button>
+          </Button>
         </div>
         
         {healthLoading && healthItems.length === 0 && (
@@ -155,60 +159,91 @@ export default function Items({
           <div className="text-center p-8 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
             <p className="text-red-600 dark:text-red-400 font-medium">Failed to load system data</p>
             <p className="text-red-500 dark:text-red-500 text-sm mt-1">{healthError}</p>
-            <button
+            <Button
               onClick={refetch}
-              className="mt-3 px-3 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+              variant="outline"
+              size="xs"
+              className="mt-3"
             >
               Try Again
-            </button>
+            </Button>
           </div>
         )}
         
         {healthItems.length > 0 && (
-          <div className="grid auto-rows-fr grid-cols-2 gap-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-            {healthItems.map((item, index) => (
-              <Item key={index}>
-                <ItemTitle className="flex items-center gap-2">
-                  <ItemIcon>{item.icon}</ItemIcon>
-                  {item.title}
-                </ItemTitle>
-                <ItemDescription>{item.description}</ItemDescription>
-              </Item>
-            ))}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                         {healthItems.map((item, index) => (
+               <Card key={index} className="transition-all hover:shadow-md">
+                 <CardHeader className="pb-3 text-center">
+                   <CardTitle className="flex items-center justify-center gap-2 text-base">
+                     <div className="flex items-center">
+                       {item.icon}
+                     </div>
+                     {item.title}
+                   </CardTitle>
+                 </CardHeader>
+                 <CardContent className="pt-0 text-center">
+                   <CardDescription className="text-sm">
+                     {item.description}
+                   </CardDescription>
+                 </CardContent>
+               </Card>
+             ))}
           </div>
         )}
         
         {healthData && (
           <div className="text-center text-xs text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg">
-            {(() => {
-              const cashbookDate = healthData.database.modules.cashbook?.latestTransactionDate;
-              const bookingsDate = healthData.database.modules.bookingsPayments?.latestSlotDate;
-              
-              if (cashbookDate && bookingsDate) {
-                const cashbookTime = new Date(cashbookDate).getTime();
-                const bookingsTime = new Date(bookingsDate).getTime();
-                const diffDays = Math.abs(cashbookTime - bookingsTime) / (1000 * 60 * 60 * 24);
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {(() => {
+                const cashbookDate = healthData.database.modules.cashbook?.latestTransactionDate;
+                const bookingsDate = healthData.database.modules.bookingsPayments?.latestSlotDate;
                 
-                const isAlert = diffDays > 7;
-                const alertColor = isAlert ? 'text-red-600' : 'text-green-600';
-                const alertText = isAlert ? 'ALERT' : 'OK';
+                if (cashbookDate && bookingsDate) {
+                  const cashbookTime = new Date(cashbookDate).getTime();
+                  const bookingsTime = new Date(bookingsDate).getTime();
+                  const diffDays = Math.abs(cashbookTime - bookingsTime) / (1000 * 60 * 60 * 24);
+                  
+                  const isAlert = diffDays > 7;
+                  
+                  return (
+                    <>
+                      <span>System Status:</span>
+                      <Badge variant="default" size="sm">
+                        {healthData.status}
+                      </Badge>
+                      <span>•</span>
+                      <span>Date Sync:</span>
+                      <Badge 
+                        variant={isAlert ? "destructive" : "default"} 
+                        size="sm"
+                      >
+                        {isAlert ? 'ALERT' : 'OK'}
+                      </Badge>
+                      <span>•</span>
+                      <span>Last Updated:</span>
+                      <Badge variant="outline" size="default">
+                        {new Date(healthData.timestamp).toLocaleTimeString()}
+                      </Badge>
+                    </>
+                  );
+                }
                 
                 return (
-                  <p>
-                    System Status: <span className="font-medium text-green-600">{healthData.status}</span> • 
-                    Date Sync: <span className={`font-medium ${alertColor}`}>{alertText}</span> • 
-                    Last Updated: <span className="font-medium">{new Date(healthData.timestamp).toLocaleTimeString()}</span>
-                  </p>
+                  <>
+                    <span>System Status:</span>
+                    <Badge variant="default" size="sm">
+                      {healthData.status}
+                    </Badge>
+                    <span>•</span>
+                    <span>Last Updated:</span>
+                    <Badge variant="secondary" size="sm">
+                      {new Date(healthData.timestamp).toLocaleTimeString()}
+                    </Badge>
+                  </>
                 );
-              }
-              
-              return (
-                <p>
-                  System Status: <span className="font-medium text-green-600">{healthData.status}</span> • 
-                  Last Updated: <span className="font-medium">{new Date(healthData.timestamp).toLocaleTimeString()}</span>
-                </p>
-              );
-            })()}
+              })()}
+            </div>
           </div>
         )}
       </div>
