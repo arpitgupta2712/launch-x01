@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 import LaunchUI from "../../logos/launch-ui";
+import { ClayGroundsComposite } from "../../logos/claygrounds";
 import {
   Footer,
   FooterBottom,
@@ -33,34 +34,34 @@ interface FooterProps {
 }
 
 export default function FooterSection({
-  logo = <LaunchUI />,
-  name = "Launch UI",
+  logo = <ClayGroundsComposite logomarkVariant="white" logotypeVariant="white" logomarkWidth={24} logomarkHeight={24} logotypeWidth={100} logotypeHeight={24} gap="gap-2" />,
+  name = "",
   columns = [
     {
       title: "Product",
       links: [
-        { text: "Changelog", href: siteConfig.url },
-        { text: "Documentation", href: siteConfig.url },
+        { text: "Sports", href: "https://www.claygrounds.com" },
+        { text: "Community", href: "https://www.claygrounds.com" },
       ],
     },
     {
       title: "Company",
       links: [
-        { text: "About", href: siteConfig.url },
-        { text: "Careers", href: siteConfig.url },
-        { text: "Blog", href: siteConfig.url },
+        { text: "About", href: "https://www.goaltech.in" },
+        { text: "Careers", href: "https://www.goaltech.in" },
+        { text: "Blog", href: "https://www.goaltech.in" },
       ],
     },
     {
       title: "Contact",
       links: [
-        { text: "Discord", href: siteConfig.url },
-        { text: "Twitter", href: siteConfig.url },
-        { text: "Github", href: siteConfig.links.github },
+        { text: "Instagram", href: "https://www.instagram.com/claygroundsbyplaza" },
+        { text: "Youtube", href: "https://www.youtube.com/@claygroundsbyplaza" },
+        { text: "Github", href: "https://github.com/arpitgupta2712" },
       ],
     },
   ],
-  copyright = "© 2025 Mikołaj Dobrucki. All rights reserved",
+  copyright = "© 2019 ClayGrounds. All rights reserved",
   policies = [
     { text: "Privacy Policy", href: siteConfig.url },
     { text: "Terms of Service", href: siteConfig.url },

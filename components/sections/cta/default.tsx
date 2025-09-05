@@ -22,11 +22,11 @@ interface CTAProps {
 }
 
 export default function CTA({
-  title = "Start building",
+  title = "Find the perfect court for your next game",
   buttons = [
     {
-      href: siteConfig.getStartedUrl,
-      text: "Get Started",
+      href: "https://www.claygrounds.com",
+      text: "Find a Court",
       variant: "default",
     },
   ],
