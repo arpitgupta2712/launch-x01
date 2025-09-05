@@ -16,10 +16,12 @@ export default function Home() {
       <Hero />
       <DatabaseHealth />
       <Divider variant="arrow" size="sm" />
-      <SystemHealth />
-      <Stats />
       <Pricing />
+      <Divider variant="glow" size="sm" />
+      <SystemHealth />
       <FAQ />
+      <Divider variant="arrow" size="sm" />
+      <Stats />
       <CTA />
       <Footer />
     </main>
