@@ -12,10 +12,10 @@ import { ReactNode } from "react";
 
 import { useOptimizedHealthData } from "@/lib/hooks/use-optimized-data";
 
-import { Badge } from "../../ui/badge";
-import { Button } from "../../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
-import { Section } from "../../ui/section";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Section } from "../ui/section";
 
 interface ItemProps {
   title: string;
@@ -127,7 +127,7 @@ function mapHealthDataToItems(healthData: HealthData): ItemProps[] {
   return items.sort((a, b) => (a.order || 999) - (b.order || 999));
 }
 
-export default function Items({
+export default function DatabaseHealth({
   title = "System Health Dashboard",
   className,
 }: ItemsProps) {

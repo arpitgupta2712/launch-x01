@@ -1,12 +1,12 @@
-import AdminStats from "../components/sections/admin-stats/default";
-import CTA from "../components/sections/cta/default";
-import DatabaseHealth from "../components/sections/database-health/default";
-import FAQ from "../components/sections/faq/default";
-import Footer from "../components/sections/footer/default";
-import Hero from "../components/sections/hero/default";
-import Navbar from "../components/sections/navbar/default";
-import Pricing from "../components/sections/pricing/default";
-import SystemHealth from "../components/sections/system-health/default";
+import AdminStats from "../components/sections/AdminStats";
+import CTA from "../components/sections/CTA";
+import DatabaseHealth from "../components/sections/DatabaseHealth";
+import FAQ from "../components/sections/FAQ";
+import Footer from "../components/sections/Footer";
+import Hero from "../components/sections/Hero";
+import Navbar from "../components/sections/Navbar";
+import Pricing from "../components/sections/Pricing";
+import SystemHealth from "../components/sections/SystemHealth";
 import { Divider } from "../components/ui/divider";
 import { PriorityLoader } from "../components/ui/priority-loader";
 

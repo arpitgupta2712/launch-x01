@@ -4,14 +4,14 @@ import { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-import Github from "../../logos/github";
-import React from "../../logos/react";
-import { Badge } from "../../ui/badge";
-import { Button, type ButtonProps } from "../../ui/button";
-import Glow from "../../ui/glow";
-import { Mockup, MockupFrame } from "../../ui/mockup";
-import Screenshot from "../../ui/screenshot";
-import { Section } from "../../ui/section";
+import Github from "../logos/github";
+import React from "../logos/react";
+import { Badge } from "../ui/badge";
+import { Button, type ButtonProps } from "../ui/button";
+import Glow from "../ui/glow";
+import { Mockup, MockupFrame } from "../ui/mockup";
+import Screenshot from "../ui/screenshot";
+import { Section } from "../ui/section";
 
 /**
  * 🎨 HERO BUTTON CONFIGURATION

@@ -2,9 +2,9 @@ import { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { Button, type ButtonProps } from "../../ui/button";
-import Glow from "../../ui/glow";
-import { Section } from "../../ui/section";
+import { Button, type ButtonProps } from "../ui/button";
+import Glow from "../ui/glow";
+import { Section } from "../ui/section";
 
 interface CTAButtonProps {
   href: string;

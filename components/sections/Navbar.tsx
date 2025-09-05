@@ -4,16 +4,16 @@ import { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-import { ClayGroundsComposite } from "../../logos/claygrounds";
-import { Button, type ButtonProps } from "../../ui/button";
-// import { ModeToggle } from "../../ui/mode-toggle"; // Disabled - keeping dark theme default
+import { ClayGroundsComposite } from "../logos/claygrounds";
+import { Button, type ButtonProps } from "../ui/button";
+// import { ModeToggle } from "../ui/mode-toggle"; // Disabled - keeping dark theme default
 import {
   Navbar as NavbarComponent,
   NavbarLeft,
   NavbarRight,
-} from "../../ui/navbar";
-import Navigation from "../../ui/navigation";
-import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
+} from "../ui/navbar";
+import Navigation from "../ui/navigation";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 
 /**
  * Configuration for individual navigation links in the mobile menu

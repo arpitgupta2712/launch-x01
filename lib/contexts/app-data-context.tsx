@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+
 import { API_CONFIG } from '@/lib/api/config';
 
 // Combined data interfaces
@@ -272,7 +273,17 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       console.log('🚀 Starting priority-based data loading:', priorityOrder.map((p, index) => `${index + 1}. ${p.key}`));
 
       // Fetch data in priority order
-      const results: any = {};
+      const results: {
+        health: HealthData | null;
+        stats: StatsData | null;
+        venues: VenuesData | null;
+        companies: CompanyInfo[];
+      } = {
+        health: null,
+        stats: null,
+        venues: null,
+        companies: [],
+      };
       
       for (const { key, endpoint } of priorityOrder) {
         try {
@@ -302,7 +313,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
               const company1 = transformCompanyResponse(company1Data);
               const company2 = transformCompanyResponse(company2Data);
               
-              results.companies = [company1, company2].filter(Boolean);
+              results.companies = [company1, company2].filter(Boolean) as CompanyInfo[];
               console.log(`✅ ${key} data loaded successfully`);
             } else {
               results.companies = [];
@@ -318,10 +329,15 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
             });
 
             if (response.ok) {
-              results[key] = await response.json();
+              const data = await response.json();
+              if (key === 'health') results.health = data as HealthData;
+              else if (key === 'stats') results.stats = data as StatsData;
+              else if (key === 'venues') results.venues = data as VenuesData;
               console.log(`✅ ${key} data loaded successfully`);
             } else {
-              results[key] = null;
+              if (key === 'health') results.health = null;
+              else if (key === 'stats') results.stats = null;
+              else if (key === 'venues') results.venues = null;
               console.log(`❌ ${key} data failed to load`);
             }
           }
@@ -334,7 +350,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
         } catch (error) {
           console.error(`Error loading ${key} data:`, error);
-          results[key] = null;
+          if (key === 'health') results.health = null;
+          else if (key === 'stats') results.stats = null;
+          else if (key === 'venues') results.venues = null;
+          else if (key === 'companies') results.companies = [];
           setData(prev => ({
             ...prev,
             loading: { ...prev.loading, [key]: false },
@@ -368,7 +387,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         stats: results.stats ? '✅' : '❌',
         health: results.health ? '✅' : '❌', 
         venues: results.venues ? '✅' : '❌',
-        companies: results.companies?.length ? '✅' : '❌'
+        companies: results.companies.length ? '✅' : '❌'
       });
     } catch (err) {
       console.error('Error fetching app data:', err);

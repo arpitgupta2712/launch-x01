@@ -15,10 +15,10 @@ import { ReactNode, useEffect, useState } from "react";
 import { useOptimizedVenuesData } from "@/lib/hooks/use-optimized-data";
 import { cn } from "@/lib/utils";
 
-import { Badge } from "../../ui/badge";
-import { Button } from "../../ui/button";
-import { Card, CardContent } from "../../ui/card";
-import { Section } from "../../ui/section";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Section } from "../ui/section";
 
 /**
  * 🎨 HEALTH METRIC CONFIGURATION
@@ -105,7 +105,7 @@ interface HealthDashboardProps {
  * - Line 99-115: Health metrics array - customize for your system
  * - Line 117: Section background and styling
  */
-export default function HealthDashboard({
+export default function SystemHealth({
   // 🎨 BRAND CUSTOMIZATION: Dynamic title - rotates through key metrics
   title,
   // 🎨 BRAND CUSTOMIZATION: Data freshness badge - auto-generated with color coding

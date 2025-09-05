@@ -1,7 +1,6 @@
 "use client";
 
 import { useAppDataContext } from '@/lib/contexts/app-data-context';
-import { API_CONFIG } from '@/lib/api/config';
 
 interface PriorityLoaderProps {
   className?: string;
