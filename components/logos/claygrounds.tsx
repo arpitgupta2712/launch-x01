@@ -46,7 +46,6 @@ export function ClayGroundsLogo({
       width={width}
       height={height}
       className={className}
-      style={{ width: 'auto', height: 'auto' }}
     />
   );
 }

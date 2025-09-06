@@ -72,7 +72,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({
-  logo = <ClayGroundsComposite logomarkVariant="chartreuse" logotypeVariant="chartreuse" logomarkWidth={32} logomarkHeight={32} logotypeWidth={120} logotypeHeight={32} gap="gap-2" />, // 🎨 BRAND CUSTOMIZATION: ClayGrounds composite with mixed colors
+  logo = <ClayGroundsComposite logomarkVariant="chartreuse" logotypeVariant="chartreuse" logomarkWidth={40} logomarkHeight={40} logotypeWidth={140} logotypeHeight={40} gap="gap-2" />, // 🎨 BRAND CUSTOMIZATION: ClayGrounds composite with mixed colors
   homeUrl = siteConfig.url, // 🎨 BRAND CUSTOMIZATION: Set your home page URL
   mobileLinks = [
     { text: "Server", href: "https://www.partner.claygrounds.com" }, // 🎨 BRAND CUSTOMIZATION: Update mobile menu links
