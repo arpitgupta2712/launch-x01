@@ -1,6 +1,5 @@
-import { User, Users, Wallet } from "lucide-react";
+import { Trophy, Users, Wallet } from "lucide-react";
 
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 import { PricingColumn, PricingColumnProps } from "../ui/pricing-column";
@@ -21,12 +20,12 @@ export default function Pricing({
       name: "CashBook",
       icon: <Wallet className="size-4" />,
       description: "Managing cash collections and payments",
-      price: 0,
-      priceNote: "Free and open-source forever.",
+      price: 6000,
+      priceNote: "INR 300/- per wallet per month plus Onboarding fee",
       cta: {
         variant: "default",
         label: "Access CashBook System",
-        href: "/docs/getting-started/introduction",
+        href: "https://web.cashbook.in/businesses/pBig9dNOwjFciaXMCmU7/cashbooks",
       },
       features: [
         "Compile and Analyze Statements",
@@ -38,21 +37,19 @@ export default function Pricing({
     },
     {
       name: "Hudle",
-      icon: <User className="size-4" />,
+      icon: <Trophy className="size-4" />,
       description: "Managing Slot inventory and sales",
-      price: 99,
-      priceNote: "Lifetime access. Free updates. No recurring fees.",
+      price: 10000,
+      priceNote: "upto 2% commission on sales including on Pay-Later",
       cta: {
         variant: "default",
         label: "Access Hudle System",
-        href: siteConfig.pricing.pro,
+        href: "https://partner.hudle.in/",
       },
       features: [
         "Slot inventory management",
-        "Sales Reports",
-        "Outstanding Payments",
-        "Competition Analysis",
-        "Venue Lookups",
+        "Generate Sales Reports",
+        "Venue Search and Market Analysis",
       ],
       variant: "glow-brand",
     },
@@ -60,15 +57,17 @@ export default function Pricing({
       name: "SalaryBox",
       icon: <Users className="size-4" />,
       description: "Managing Employee payrolls and leaves",
-      price: 499,
-      priceNote: "Lifetime access. Free updates. No recurring fees.",
+      price: 4000,
+      priceNote: "INR 200/- per employee per month",
       cta: {
         variant: "default",
         label: "Access SalaryBox System",
-        href: siteConfig.pricing.team,
+        href: "https://web.salarybox.in/my-team",
       },
       features: [
-        "All the templates, components and sections available for your entire team",
+        "Employee Management",
+        "Payroll Reports",
+        "Live Attendance Tracking",
       ],
       variant: "glow",
     },
@@ -93,7 +92,7 @@ export default function Pricing({
           </div>
         )}
         {plans !== false && plans.length > 0 && (
-          <div className="max-w-container mx-auto grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="max-w-container mx-auto grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:items-stretch">
             {plans.map((plan) => (
               <PricingColumn
                 key={plan.name}

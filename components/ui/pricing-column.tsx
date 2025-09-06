@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./button";
 
 const pricingColumnVariants = cva(
-  "max-w-container relative flex flex-col gap-6 overflow-hidden rounded-2xl p-8 shadow-xl",
+  "w-full max-w-sm relative flex flex-col gap-6 overflow-hidden rounded-2xl p-8 shadow-xl h-fit",
   {
     variants: {
       variant: {
@@ -79,34 +79,36 @@ export function PricingColumn({
         </div>
         <div className="flex items-center gap-3 lg:flex-col lg:items-start xl:flex-row xl:items-center">
           <div className="flex items-baseline gap-1">
-            <span className="text-muted-foreground text-2xl font-bold">$</span>
+            <span className="text-muted-foreground text-2xl font-bold">₹</span>
             <span className="text-6xl font-bold">{price}</span>
           </div>
           <div className="flex min-h-[40px] flex-col">
             {price > 0 && (
               <>
-                <span className="text-sm">one-time payment</span>
+                <span className="text-sm">monthly</span>
                 <span className="text-muted-foreground text-sm">
-                  plus local taxes
+                  plus GST
                 </span>
               </>
             )}
           </div>
         </div>
         <Button variant={cta.variant} size="lg" asChild>
-          <Link href={cta.href}>{cta.label}</Link>
+          <Link href={cta.href} target="_blank" rel="noopener noreferrer">
+            {cta.label}
+          </Link>
         </Button>
         <p className="text-muted-foreground min-h-[40px] max-w-[220px] text-sm">
           {priceNote}
         </p>
         <hr className="border-input" />
       </div>
-      <div>
+      <div className="flex-1">
         <ul className="flex flex-col gap-2">
           {features.map((feature) => (
-            <li key={feature} className="flex items-center gap-2 text-sm">
-              <CircleCheckBig className="text-muted-foreground size-4 shrink-0" />
-              {feature}
+            <li key={feature} className="flex items-start gap-2 text-sm">
+              <CircleCheckBig className="text-muted-foreground size-4 shrink-0 mt-0.5" />
+              <span className="break-words leading-relaxed">{feature}</span>
             </li>
           ))}
         </ul>
