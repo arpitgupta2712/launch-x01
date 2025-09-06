@@ -38,3 +38,5 @@ next-env.d.ts
 # pro
 /app/pro/
 /components/pro/
+# Local Netlify folder
+.netlify
