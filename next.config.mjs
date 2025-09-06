@@ -5,7 +5,13 @@ const nextConfig = {
     '192.168.68.102', // Network IP for local development
     'localhost',
     '127.0.0.1'
-  ]
+  ],
+  // Configure for static export
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  }
 };
 
 export default nextConfig;
