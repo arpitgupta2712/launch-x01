@@ -6,7 +6,10 @@ import { useProgressTracking } from '@/lib/hooks/use-progress-tracking';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
 import { Badge } from './badge';
+import { Beam } from './beam';
 import { Card } from './card';
+import { Divider } from './divider';
+import { Item, ItemDescription, ItemIcon, ItemTitle } from './item';
 
 interface ProgressTrackerProps {
   operationId: string | null;
@@ -15,6 +18,25 @@ interface ProgressTrackerProps {
 
 export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProps) {
   const { progress, error } = useProgressTracking(operationId);
+
+  // Filter logs to show only important/summarized information
+  const getFilteredLogs = (logs: Array<{ message: string; timestamp: string; level: string }>) => {
+    if (!logs) return [];
+    
+    // Keywords that indicate important logs
+    const importantKeywords = [
+      'summary', 'complete', 'finished', 'success', 'error', 'failed',
+      'total', 'duration', 'rate', 'export', 'batch', 'process'
+    ];
+    
+    // Filter logs that contain important keywords or are error/warn level
+    return logs.filter(log => {
+      const message = log.message.toLowerCase();
+      const isImportant = importantKeywords.some(keyword => message.includes(keyword));
+      const isErrorOrWarn = log.level === 'error' || log.level === 'warn';
+      return isImportant || isErrorOrWarn;
+    });
+  };
 
   // Call onComplete when operation finishes
   React.useEffect(() => {
@@ -74,12 +96,19 @@ export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProp
     }
   };
 
+  const filteredLogs = getFilteredLogs(progress.logs || []);
+
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="p-6 space-y-6 relative overflow-hidden">
+      {/* Background Effect */}
+      {progress.status === 'completed' && (
+        <Beam tone="brand" className="absolute inset-0 pointer-events-none" />
+      )}
+      
       {/* Progress Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Email Report Generation</h3>
-        <Badge variant={getStatusColor(progress.status)}>
+      <div className="flex items-center justify-between relative z-10">
+        <ItemTitle className="text-lg">Email Report Generation</ItemTitle>
+        <Badge variant={getStatusColor(progress.status)} className="animate-pulse">
           {progress.status.toUpperCase()}
         </Badge>
       </div>
@@ -99,75 +128,112 @@ export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProp
       </div>
 
       {/* Progress Info */}
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div className="space-y-1">
-          <div className="text-muted-foreground">Processed:</div>
-          <div className="font-medium">{progress.current} of {progress.total}</div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-muted-foreground">Duration:</div>
-          <div className="font-medium">{progress.duration}s</div>
-        </div>
+      <div className="grid grid-cols-2 gap-4 relative z-10">
+        <Item className="p-3 bg-muted/30 rounded-lg">
+          <ItemTitle className="text-xs text-muted-foreground">Processed</ItemTitle>
+          <ItemDescription className="text-sm font-semibold">
+            {progress.current} of {progress.total}
+          </ItemDescription>
+        </Item>
+        <Item className="p-3 bg-muted/30 rounded-lg">
+          <ItemTitle className="text-xs text-muted-foreground">Duration</ItemTitle>
+          <ItemDescription className="text-sm font-semibold">
+            {progress.duration}s
+          </ItemDescription>
+        </Item>
       </div>
 
       {/* Operation Details */}
       {progress.data && (
-        <div className="text-sm space-y-2">
-          <div className="space-y-1">
-            <div className="text-muted-foreground">Operation:</div>
-            <div className="font-medium">{progress.data.operation}</div>
-          </div>
-          <div className="space-y-1">
-            <div className="text-muted-foreground">Date Range:</div>
-            <div className="font-medium">
+        <div className="space-y-3 relative z-10">
+          <Divider variant="glow" size="sm" />
+          <Item className="p-3 bg-muted/20 rounded-lg">
+            <ItemTitle className="text-xs text-muted-foreground">Operation</ItemTitle>
+            <ItemDescription className="text-sm font-medium">
+              {progress.data.operation}
+            </ItemDescription>
+          </Item>
+          <Item className="p-3 bg-muted/20 rounded-lg">
+            <ItemTitle className="text-xs text-muted-foreground">Date Range</ItemTitle>
+            <ItemDescription className="text-sm font-medium">
               {progress.data.startDate} to {progress.data.endDate}
-            </div>
-          </div>
+            </ItemDescription>
+          </Item>
         </div>
       )}
 
       {/* Error Message */}
       {progress.status === 'failed' && progress.error && (
-        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md space-y-2">
-          <div className="text-destructive font-medium">Operation Failed</div>
-          <div className="text-destructive/80 text-sm">{progress.error}</div>
+        <div className="relative z-10">
+          <Item className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <ItemIcon className="text-destructive">
+              <div className="w-6 h-6 rounded-full bg-destructive/20 flex items-center justify-center">
+                <span className="text-xs">⚠</span>
+              </div>
+            </ItemIcon>
+            <ItemTitle className="text-destructive">Operation Failed</ItemTitle>
+            <ItemDescription className="text-destructive/80">
+              {progress.error}
+            </ItemDescription>
+          </Item>
         </div>
       )}
 
       {/* Success Message */}
       {progress.status === 'completed' && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md space-y-2">
-          <div className="text-green-800 font-medium">✅ Report Generated Successfully!</div>
-          <div className="text-green-700 text-sm">
-            Your email report has been generated and sent to your email address.
-          </div>
+        <div className="relative z-10">
+          <Item className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <ItemIcon className="text-green-600">
+              <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                <span className="text-sm">✓</span>
+              </div>
+            </ItemIcon>
+            <ItemTitle className="text-green-800">Report Generated Successfully!</ItemTitle>
+            <ItemDescription className="text-green-700">
+              Your email report has been generated and sent to your email address.
+            </ItemDescription>
+          </Item>
         </div>
       )}
 
       {/* Operation Logs */}
-      {progress.logs && progress.logs.length > 0 && (
-        <Accordion type="single" collapsible>
-          <AccordionItem value="logs">
-            <AccordionTrigger>
-              <span>Operation Logs ({progress.logs.length})</span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {progress.logs.map((log, index) => (
-                  <div key={index} className="flex items-start gap-2 text-sm">
-                    <span className="text-muted-foreground text-xs mt-0.5 min-w-[60px]">
-                      {new Date(log.timestamp).toLocaleTimeString()}
-                    </span>
-                    <span className={`font-mono text-xs ${getLogLevelColor(log.level)}`}>
-                      [{log.level.toUpperCase()}]
-                    </span>
-                    <span className="flex-1">{log.message}</span>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      {filteredLogs.length > 0 && (
+        <div className="relative z-10">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="logs">
+              <AccordionTrigger>
+                <span>Important Logs ({filteredLogs.length})</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-3 max-h-48 overflow-y-auto">
+                  {filteredLogs.map((log, index) => (
+                    <Item key={index} className="p-3 bg-muted/20 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <ItemIcon className="mt-0.5">
+                          <Badge 
+                            variant={log.level === 'error' ? 'destructive' : log.level === 'warn' ? 'secondary' : 'outline'}
+                            size="sm"
+                            className="text-xs"
+                          >
+                            {log.level.toUpperCase()}
+                          </Badge>
+                        </ItemIcon>
+                        <div className="flex-1 space-y-1">
+                          <ItemDescription className="text-xs text-muted-foreground">
+                            {new Date(log.timestamp).toLocaleTimeString()}
+                          </ItemDescription>
+                          <ItemDescription className={`text-sm ${getLogLevelColor(log.level)}`}>
+                            {log.message}
+                          </ItemDescription>
+                        </div>
+                      </div>
+                    </Item>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       )}
     </Card>
   );
