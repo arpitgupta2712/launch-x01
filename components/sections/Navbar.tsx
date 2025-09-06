@@ -77,7 +77,7 @@ export default function Navbar({
   mobileLinks = [
     { text: "Getting Started", href: siteConfig.url }, // 🎨 BRAND CUSTOMIZATION: Update mobile menu links
     { text: "Components", href: siteConfig.url },
-    { text: "Documentation", href: siteConfig.url },
+    { text: "Systems", href: "#pricing" },
   ],
   actions = [
     {

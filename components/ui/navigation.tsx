@@ -56,9 +56,9 @@ export default function Navigation({
       content: "components",
     },
     {
-      title: "Documentation",
+      title: "Systems",
       isLink: true,
-      href: siteConfig.url,
+      href: "#pricing",
     },
   ],
   components = [
@@ -198,7 +198,7 @@ function ListItem({
         <a
           data-slot="list-item"
           className={cn(
-            "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors select-none",
+            "hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground block space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors select-none",
             className,
           )}
           {...props}

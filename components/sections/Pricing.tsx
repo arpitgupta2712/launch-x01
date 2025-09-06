@@ -75,7 +75,7 @@ export default function Pricing({
   className = "",
 }: PricingProps) {
   return (
-    <Section className={cn(className)}>
+    <Section id="pricing" className={cn(className)}>
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-12">
         {(title || description) && (
           <div className="flex flex-col items-center gap-4 px-4 text-center sm:gap-8">
