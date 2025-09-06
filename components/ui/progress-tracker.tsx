@@ -7,7 +7,8 @@ import { useProgressTracking } from '@/lib/hooks/use-progress-tracking';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
 import { Badge } from './badge';
 import { Beam } from './beam';
-import { Card } from './card';
+import { Button } from './button';
+import { Card, CardContent, CardDescription, CardHeader } from './card';
 import { Divider } from './divider';
 import { Item, ItemDescription, ItemIcon, ItemTitle } from './item';
 
@@ -89,9 +90,9 @@ export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProp
 
   const getLogLevelColor = (level: string) => {
     switch (level) {
-      case 'error': return 'text-red-600';
-      case 'warn': return 'text-yellow-600';
-      case 'info': return 'text-blue-600';
+      case 'error': return 'text-destructive';
+      case 'warn': return 'text-yellow-500';
+      case 'info': return 'text-primary';
       default: return 'text-muted-foreground';
     }
   };
@@ -199,17 +200,20 @@ export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProp
       {/* Operation Logs */}
       {filteredLogs.length > 0 && (
         <div className="relative z-10">
+          <Divider variant="arrow" size="sm" />
           <Accordion type="single" collapsible>
             <AccordionItem value="logs">
-              <AccordionTrigger>
-                <span>Important Logs ({filteredLogs.length})</span>
+              <AccordionTrigger asChild>
+                <Button variant="outline" className="w-full justify-between">
+                  <span>Important Logs ({filteredLogs.length})</span>
+                </Button>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-3 max-h-48 overflow-y-auto">
                   {filteredLogs.map((log, index) => (
-                    <Item key={index} className="p-3 bg-muted/20 rounded-lg">
-                      <div className="flex items-start gap-3">
-                        <ItemIcon className="mt-0.5">
+                    <Card key={index} className="p-3">
+                      <CardHeader className="p-0 pb-2">
+                        <div className="flex items-center justify-between">
                           <Badge 
                             variant={log.level === 'error' ? 'destructive' : log.level === 'warn' ? 'secondary' : 'outline'}
                             size="sm"
@@ -217,17 +221,17 @@ export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProp
                           >
                             {log.level.toUpperCase()}
                           </Badge>
-                        </ItemIcon>
-                        <div className="flex-1 space-y-1">
-                          <ItemDescription className="text-xs text-muted-foreground">
+                          <CardDescription className="text-xs text-muted-foreground">
                             {new Date(log.timestamp).toLocaleTimeString()}
-                          </ItemDescription>
-                          <ItemDescription className={`text-sm ${getLogLevelColor(log.level)}`}>
-                            {log.message}
-                          </ItemDescription>
+                          </CardDescription>
                         </div>
-                      </div>
-                    </Item>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <CardDescription className={`text-sm ${getLogLevelColor(log.level)}`}>
+                          {log.message}
+                        </CardDescription>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               </AccordionContent>
