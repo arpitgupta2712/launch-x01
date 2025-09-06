@@ -200,7 +200,7 @@ export function ProgressTracker({ operationId, onComplete, onError }: ProgressTr
           </Badge>
           
           {/* Processed Locations */}
-          {progress.data?.processedLocations && progress.data.processedLocations.length > 0 && (
+          {progress.data?.processedLocations && progress.data.processedLocations.length > 0 ? (
             <div className="space-y-2">
               <ItemTitle className="text-sm text-muted-foreground">Processed Venues</ItemTitle>
               <div className="grid grid-cols-1 gap-2">
@@ -218,12 +218,18 @@ export function ProgressTracker({ operationId, onComplete, onError }: ProgressTr
                 ))}
               </div>
             </div>
+          ) : (
+            <div className="space-y-2">
+              <Badge variant="secondary" className="w-full justify-center py-2">
+                No venues processed for the selected date range
+              </Badge>
+            </div>
           )}
         </div>
       )}
 
-      {/* Operation Logs */}
-      {filteredLogs.length > 0 && (
+      {/* Operation Logs - Disabled for cleaner UI */}
+      {false && filteredLogs.length > 0 && (
         <div className="relative z-10">
           <Divider variant="arrow" size="sm" />
           <Accordion type="single" collapsible>
