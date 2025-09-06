@@ -126,6 +126,14 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
     // This gives users full control over when to close the modal
   };
 
+  const handleProgressError = (errorMessage: string) => {
+    // If progress tracking shows authentication failed, show error and reset
+    if (errorMessage.includes('Authentication failed') || errorMessage.includes('credentials do not match')) {
+      setShowProgress(false);
+      // The error will be displayed in the form area
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={handleClose}>
       <SheetContent side="right" className="w-full sm:max-w-[500px] space-y-6">
@@ -144,6 +152,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
             <ProgressTracker 
               operationId={operationId} 
               onComplete={handleProgressComplete}
+              onError={handleProgressError}
             />
             <div className="pt-4 border-t">
               <Button

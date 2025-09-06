@@ -7,7 +7,6 @@ import { useProgressTracking } from '@/lib/hooks/use-progress-tracking';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
 import { Badge } from './badge';
 import { Beam } from './beam';
-import { Button } from './button';
 import { Card, CardContent, CardDescription, CardHeader } from './card';
 import { Divider } from './divider';
 import { Item, ItemDescription, ItemIcon, ItemTitle } from './item';
@@ -15,9 +14,10 @@ import { Item, ItemDescription, ItemIcon, ItemTitle } from './item';
 interface ProgressTrackerProps {
   operationId: string | null;
   onComplete?: () => void;
+  onError?: (errorMessage: string) => void;
 }
 
-export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProps) {
+export function ProgressTracker({ operationId, onComplete, onError }: ProgressTrackerProps) {
   const { progress, error } = useProgressTracking(operationId);
 
   // Filter logs to show only important/summarized information
@@ -43,8 +43,13 @@ export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProp
   React.useEffect(() => {
     if (progress && (progress.status === 'completed' || progress.status === 'failed' || progress.status === 'timeout')) {
       onComplete?.();
+      
+      // If operation failed with authentication error, notify parent
+      if (progress.status === 'failed' && progress.error && onError) {
+        onError(progress.error);
+      }
     }
-  }, [progress, onComplete]);
+  }, [progress, onComplete, onError]);
 
   if (!operationId) {
     return (
@@ -203,10 +208,8 @@ export function ProgressTracker({ operationId, onComplete }: ProgressTrackerProp
           <Divider variant="arrow" size="sm" />
           <Accordion type="single" collapsible>
             <AccordionItem value="logs">
-              <AccordionTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>Important Logs ({filteredLogs.length})</span>
-                </Button>
+              <AccordionTrigger className="w-full justify-between">
+                <span>Important Logs ({filteredLogs.length})</span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-3 max-h-48 overflow-y-auto">
