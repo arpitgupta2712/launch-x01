@@ -24,7 +24,7 @@ interface SignInModalProps {
 }
 
 export function SignInModal({ open, onOpenChange }: SignInModalProps) {
-  const { signIn, isLoading, error, clearError, operationId, clearOperationId } = useAuth();
+  const { signIn, isLoading, error, clearError, setError, operationId, clearOperationId } = useAuth();
   // Helper function to get previous month's first and last day (IST timezone)
   const getPreviousMonthDates = () => {
     const now = new Date();
@@ -68,12 +68,14 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (error) clearError();
+    // Don't clear error automatically - let user see the error message
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clear any previous errors when starting new submission
+    clearError();
     
     // Basic validation
     if (!formData.email || !formData.password || !formData.startDate || !formData.endDate) {
@@ -130,7 +132,8 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
     // If progress tracking shows authentication failed, show error and reset
     if (errorMessage.includes('Authentication failed') || errorMessage.includes('credentials do not match')) {
       setShowProgress(false);
-      // The error will be displayed in the form area
+      // Set the error message to be displayed in the form
+      setError(errorMessage);
     }
   };
 
@@ -227,8 +230,12 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
 
             {/* Error Display */}
             {error && (
-              <div className="p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-                {error}
+              <div className="p-4 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+                <div className="flex items-center gap-2">
+                  <span className="text-destructive">⚠</span>
+                  <span className="font-medium">Authentication Failed</span>
+                </div>
+                <p className="mt-1 text-destructive/80">{error}</p>
               </div>
             )}
           </Card>

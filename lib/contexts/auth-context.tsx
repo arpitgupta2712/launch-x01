@@ -37,6 +37,7 @@ interface AuthContextType {
   signIn: (credentials: Omit<SignInRequest, 'reportType'>) => Promise<SignInResponse>;
   signOut: () => void;
   clearError: () => void;
+  setError: (error: string) => void;
   clearOperationId: () => void;
 }
 
@@ -139,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       clearError,
+      setError,
       clearOperationId,
     }}>
       {children}
