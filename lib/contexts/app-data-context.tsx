@@ -240,6 +240,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const fetchAllData = useCallback(async () => {
     // Always fetch fresh data - no caching
+    console.log('🔄 Refreshing data...');
 
     // Set loading states
     setData(prev => ({
@@ -248,134 +249,190 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       errors: { health: null, stats: null, venues: null, companies: null },
     }));
 
-    try {
-      // Priority-based loading: fetch in order of importance
-      const priorityOrder = [
-        { key: 'stats', endpoint: API_CONFIG.endpoints.stats },
-        { key: 'venues', endpoint: API_CONFIG.endpoints.venues },
-        { key: 'companies', endpoint: 'companies' },
-        { key: 'health', endpoint: API_CONFIG.endpoints.health },
-      ];
+    // Individual fetch functions that update state immediately when complete
+    const fetchStats = async () => {
+      try {
+        console.log('📊 Loading stats data...');
+        const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stats}`, {
+          method: 'GET',
+          headers: API_CONFIG.defaultHeaders,
+          mode: API_CONFIG.corsMode,
+        });
 
-                        console.log('🔄 Refreshing data...');
-
-      // Fetch data in priority order
-      const results: {
-        health: HealthData | null;
-        stats: StatsData | null;
-        venues: VenuesData | null;
-        companies: CompanyInfo[];
-      } = {
-        health: null,
-        stats: null,
-        venues: null,
-        companies: [],
-      };
-      
-      for (const { key, endpoint } of priorityOrder) {
-        try {
-          if (key === 'companies') {
-            // Handle company data separately (two endpoints)
-                                    // console.log(`📊 Loading ${key} data...`);
-            const [company1Response, company2Response] = await Promise.allSettled([
-              fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.company1}`, {
-                method: 'GET',
-                headers: API_CONFIG.defaultHeaders,
-                mode: API_CONFIG.corsMode,
-              }),
-              fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.company2}`, {
-                method: 'GET',
-                headers: API_CONFIG.defaultHeaders,
-                mode: API_CONFIG.corsMode,
-              })
-            ]);
-
-            if (company1Response.status === 'fulfilled' && company2Response.status === 'fulfilled' && 
-                company1Response.value.ok && company2Response.value.ok) {
-              const [company1Data, company2Data] = await Promise.all([
-                company1Response.value.json(),
-                company2Response.value.json()
-              ]);
-              
-              const company1 = transformCompanyResponse(company1Data);
-              const company2 = transformCompanyResponse(company2Data);
-              
-              results.companies = [company1, company2].filter(Boolean) as CompanyInfo[];
-                                        // console.log(`✅ ${key} data loaded successfully`);
-            } else {
-              results.companies = [];
-                                        // console.log(`❌ ${key} data failed to load`);
-            }
-          } else {
-            // Handle other endpoints
-                                    // console.log(`📊 Loading ${key} data...`);
-            const response = await fetch(`${API_CONFIG.baseUrl}${endpoint}`, {
-              method: 'GET',
-              headers: API_CONFIG.defaultHeaders,
-              mode: API_CONFIG.corsMode,
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              if (key === 'health') results.health = data as HealthData;
-              else if (key === 'stats') results.stats = data as StatsData;
-              else if (key === 'venues') results.venues = data as VenuesData;
-                                        // console.log(`✅ ${key} data loaded successfully`);
-            } else {
-              if (key === 'health') results.health = null;
-              else if (key === 'stats') results.stats = null;
-              else if (key === 'venues') results.venues = null;
-                                        // console.log(`❌ ${key} data failed to load`);
-            }
-          }
-
-          // Update loading state for this specific data type
+        if (response.ok) {
+          const data = await response.json();
           setData(prev => ({
             ...prev,
-            loading: { ...prev.loading, [key]: false },
+            stats: data as StatsData,
+            loading: { ...prev.loading, stats: false },
+            errors: { ...prev.errors, stats: null },
           }));
-
-        } catch (error) {
-          console.error(`Error loading ${key} data:`, error);
-          if (key === 'health') results.health = null;
-          else if (key === 'stats') results.stats = null;
-          else if (key === 'venues') results.venues = null;
-          else if (key === 'companies') results.companies = [];
+          console.log('✅ Stats data loaded successfully');
+        } else {
           setData(prev => ({
             ...prev,
-            loading: { ...prev.loading, [key]: false },
-            errors: { ...prev.errors, [key]: `Failed to load ${key} data` },
+            stats: null,
+            loading: { ...prev.loading, stats: false },
+            errors: { ...prev.errors, stats: 'Failed to load stats data' },
           }));
+          console.log('❌ Stats data failed to load');
         }
+      } catch (error) {
+        console.error('Error loading stats data:', error);
+        setData(prev => ({
+          ...prev,
+          stats: null,
+          loading: { ...prev.loading, stats: false },
+          errors: { ...prev.errors, stats: 'Network error' },
+        }));
       }
+    };
 
-      // No caching - data is fresh
+    const fetchVenues = async () => {
+      try {
+        console.log('📊 Loading venues data...');
+        const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.venues}`, {
+          method: 'GET',
+          headers: API_CONFIG.defaultHeaders,
+          mode: API_CONFIG.corsMode,
+        });
 
-      // Update final state
-      setData(prev => ({
-        ...prev,
-        health: results.health,
-        stats: results.stats,
-        venues: results.venues,
-        companies: results.companies,
-        loading: { health: false, stats: false, venues: false, companies: false },
-        lastRefresh: new Date(),
-      }));
+        if (response.ok) {
+          const data = await response.json();
+          setData(prev => ({
+            ...prev,
+            venues: data as VenuesData,
+            loading: { ...prev.loading, venues: false },
+            errors: { ...prev.errors, venues: null },
+          }));
+          console.log('✅ Venues data loaded successfully');
+        } else {
+          setData(prev => ({
+            ...prev,
+            venues: null,
+            loading: { ...prev.loading, venues: false },
+            errors: { ...prev.errors, venues: 'Failed to load venues data' },
+          }));
+          console.log('❌ Venues data failed to load');
+        }
+      } catch (error) {
+        console.error('Error loading venues data:', error);
+        setData(prev => ({
+          ...prev,
+          venues: null,
+          loading: { ...prev.loading, venues: false },
+          errors: { ...prev.errors, venues: 'Network error' },
+        }));
+      }
+    };
 
-                        console.log('✅ Data refresh completed');
-    } catch (err) {
-      console.error('Error fetching app data:', err);
-      setData(prev => ({
-        ...prev,
-        loading: { health: false, stats: false, venues: false, companies: false },
-        errors: {
-          health: 'Network error',
-          stats: 'Network error',
-          venues: 'Network error',
-          companies: 'Network error',
-        },
-      }));
-    }
+    const fetchCompanies = async () => {
+      try {
+        console.log('📊 Loading companies data...');
+        const [company1Response, company2Response] = await Promise.allSettled([
+          fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.company1}`, {
+            method: 'GET',
+            headers: API_CONFIG.defaultHeaders,
+            mode: API_CONFIG.corsMode,
+          }),
+          fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.company2}`, {
+            method: 'GET',
+            headers: API_CONFIG.defaultHeaders,
+            mode: API_CONFIG.corsMode,
+          })
+        ]);
+
+        if (company1Response.status === 'fulfilled' && company2Response.status === 'fulfilled' && 
+            company1Response.value.ok && company2Response.value.ok) {
+          const [company1Data, company2Data] = await Promise.all([
+            company1Response.value.json(),
+            company2Response.value.json()
+          ]);
+          
+          const company1 = transformCompanyResponse(company1Data);
+          const company2 = transformCompanyResponse(company2Data);
+          
+          const companies = [company1, company2].filter(Boolean) as CompanyInfo[];
+          setData(prev => ({
+            ...prev,
+            companies,
+            loading: { ...prev.loading, companies: false },
+            errors: { ...prev.errors, companies: null },
+          }));
+          console.log('✅ Companies data loaded successfully');
+        } else {
+          setData(prev => ({
+            ...prev,
+            companies: [],
+            loading: { ...prev.loading, companies: false },
+            errors: { ...prev.errors, companies: 'Failed to load companies data' },
+          }));
+          console.log('❌ Companies data failed to load');
+        }
+      } catch (error) {
+        console.error('Error loading companies data:', error);
+        setData(prev => ({
+          ...prev,
+          companies: [],
+          loading: { ...prev.loading, companies: false },
+          errors: { ...prev.errors, companies: 'Network error' },
+        }));
+      }
+    };
+
+    const fetchHealth = async () => {
+      try {
+        console.log('📊 Loading health data...');
+        const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.health}`, {
+          method: 'GET',
+          headers: API_CONFIG.defaultHeaders,
+          mode: API_CONFIG.corsMode,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setData(prev => ({
+            ...prev,
+            health: data as HealthData,
+            loading: { ...prev.loading, health: false },
+            errors: { ...prev.errors, health: null },
+          }));
+          console.log('✅ Health data loaded successfully');
+        } else {
+          setData(prev => ({
+            ...prev,
+            health: null,
+            loading: { ...prev.loading, health: false },
+            errors: { ...prev.errors, health: 'Failed to load health data' },
+          }));
+          console.log('❌ Health data failed to load');
+        }
+      } catch (error) {
+        console.error('Error loading health data:', error);
+        setData(prev => ({
+          ...prev,
+          health: null,
+          loading: { ...prev.loading, health: false },
+          errors: { ...prev.errors, health: 'Network error' },
+        }));
+      }
+    };
+
+    // Run all fetches in parallel - each will update state independently
+    await Promise.allSettled([
+      fetchStats(),    // Priority 1: Most important for user
+      fetchVenues(),   // Priority 2: Important for dashboard
+      fetchCompanies(), // Priority 3: Footer/contact info
+      fetchHealth(),   // Priority 4: System monitoring
+    ]);
+
+    // Update last refresh time
+    setData(prev => ({
+      ...prev,
+      lastRefresh: new Date(),
+    }));
+
+    console.log('✅ Data refresh completed');
   }, []);
 
   useEffect(() => {
