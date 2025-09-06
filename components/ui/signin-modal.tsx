@@ -8,7 +8,6 @@ import { Badge } from './badge';
 import { Button } from './button';
 import { Card } from './card';
 import { Input } from './input';
-import { Label } from './label';
 import { ProgressTracker } from './progress-tracker';
 import {
   Sheet,
@@ -173,22 +172,27 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
           <Card className="p-6 space-y-6">
             {/* Email Field */}
             <div className="space-y-3">
-              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+              <Badge variant="outline" className="w-fit">
+                Username
+              </Badge>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter Hudle Partner email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-10"
+                variant="outline"
+                inputSize="lg"
               />
             </div>
 
             {/* Password Field */}
             <div className="space-y-3">
-              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+              <Badge variant="outline" className="w-fit">
+                Password
+              </Badge>
               <Input
                 id="password"
                 type="password"
@@ -197,14 +201,17 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-10"
+                variant="outline"
+                inputSize="lg"
               />
             </div>
 
             {/* Date Range Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-3">
-                <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
+                <Badge variant="outline" className="w-fit">
+                  Start Date
+                </Badge>
                 <Input
                   id="startDate"
                   type="date"
@@ -212,11 +219,14 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
                   onChange={(e) => handleInputChange('startDate', e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-10"
+                  variant="outline"
+                  inputSize="lg"
                 />
               </div>
               <div className="space-y-3">
-                <Label htmlFor="endDate" className="text-sm font-medium">End Date</Label>
+                <Badge variant="outline" className="w-fit">
+                  End Date
+                </Badge>
                 <Input
                   id="endDate"
                   type="date"
@@ -224,7 +234,8 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
                   onChange={(e) => handleInputChange('endDate', e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-10"
+                  variant="outline"
+                  inputSize="lg"
                 />
               </div>
             </div>
