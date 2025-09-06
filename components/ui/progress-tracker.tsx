@@ -20,6 +20,27 @@ interface ProgressTrackerProps {
 export function ProgressTracker({ operationId, onComplete, onError }: ProgressTrackerProps) {
   const { progress, error } = useProgressTracking(operationId);
 
+  // Format date to natural readable format (e.g., "1st August 2025")
+  const formatNaturalDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+    
+    // Add ordinal suffix to day
+    const getOrdinalSuffix = (day: number) => {
+      if (day >= 11 && day <= 13) return 'th';
+      switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    
+    return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
+  };
+
   // Filter logs to show only important/summarized information
   const getFilteredLogs = (logs: Array<{ message: string; timestamp: string; level: string }>) => {
     if (!logs) return [];
@@ -57,6 +78,18 @@ export function ProgressTracker({ operationId, onComplete, onError }: ProgressTr
       }
     }
   }, [progress, onComplete, onError]);
+
+  // Debug: Log progress data to understand the structure
+  React.useEffect(() => {
+    if (progress) {
+      console.log('Progress data:', {
+        current: progress.current,
+        total: progress.total,
+        processedLocations: progress.data?.processedLocations?.length,
+        data: progress.data
+      });
+    }
+  }, [progress]);
 
   if (!operationId) {
     return (
@@ -140,38 +173,28 @@ export function ProgressTracker({ operationId, onComplete, onError }: ProgressTr
         </div>
       </div>
 
-      {/* Progress Info */}
-      <div className="grid grid-cols-2 gap-4 relative z-10">
-        <Item className="p-3 bg-muted/30 rounded-lg">
-          <ItemTitle className="text-xs text-muted-foreground">Processed</ItemTitle>
-          <ItemDescription className="text-sm font-semibold">
-            {progress.current} of {progress.total}
-          </ItemDescription>
-        </Item>
-        <Item className="p-3 bg-muted/30 rounded-lg">
-          <ItemTitle className="text-xs text-muted-foreground">Duration</ItemTitle>
-          <ItemDescription className="text-sm font-semibold">
-            {progress.duration}s
-          </ItemDescription>
-        </Item>
+      {/* Progress Info - AdminStats Style */}
+      <div className="relative z-10">
+        <div className="text-center p-4 bg-muted/20 rounded-lg">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm">
+            <span className="text-muted-foreground">Processed</span>
+            <span className="text-primary font-bold">
+              {progress.data?.processedLocations?.length || progress.current} of {progress.data?.processedLocations?.length || progress.total}
+            </span>
+            <span className="text-muted-foreground">in</span>
+            <span className="text-primary font-bold">
+              {progress.duration}s
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Operation Details */}
+      {/* Date Range Display */}
       {progress.data && (
-        <div className="space-y-3 relative z-10">
-          <Divider variant="glow" size="sm" />
-          <Item className="p-3 bg-muted/20 rounded-lg">
-            <ItemTitle className="text-xs text-muted-foreground">Operation</ItemTitle>
-            <ItemDescription className="text-sm font-medium">
-              {progress.data.operation}
-            </ItemDescription>
-          </Item>
-          <Item className="p-3 bg-muted/20 rounded-lg">
-            <ItemTitle className="text-xs text-muted-foreground">Date Range</ItemTitle>
-            <ItemDescription className="text-sm font-medium">
-              {progress.data.startDate} to {progress.data.endDate}
-            </ItemDescription>
-          </Item>
+        <div className="relative z-10">
+          <Badge variant="outline" className="w-full justify-center py-2">
+            {formatNaturalDate(progress.data.startDate)} to {formatNaturalDate(progress.data.endDate)}
+          </Badge>
         </div>
       )}
 
