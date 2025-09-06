@@ -13,8 +13,8 @@ interface PricingProps {
 }
 
 export default function Pricing({
-  title = "Build your dream landing page, today.",
-  description = "Get lifetime access to all the components. No recurring fees. Just simple, transparent pricing.",
+  title = "All Systems Engineered for Excellence",
+  description = "Advanced Adminstrative Systems. Unified and centralized.",
   plans = [
     {
       name: "CashBook",
