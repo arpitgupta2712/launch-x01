@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  RefreshCcwIcon,
-  TargetIcon,
-  LandPlot,
   HandshakeIcon,
   IdCardIcon,
   IndianRupeeIcon,
+  LandPlot,
+  RefreshCcwIcon,
+  TargetIcon,
   WalletIcon,
 } from "lucide-react";
 import { ReactNode } from "react";
