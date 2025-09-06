@@ -12,7 +12,8 @@ export const API_CONFIG = {
     health: '/api/db/health',
     venues: '/api/hudle/global/data-health',
     company1: '/api/hudle/users/search/phone/9999099867?includes=business_profile',
-    company2: '/api/hudle/users/search/phone/9910545678?includes=business_profile'
+    company2: '/api/hudle/users/search/phone/9910545678?includes=business_profile',
+    signIn: '/api/hudle/reports/email'
   },
   defaultHeaders: {
     'Accept': 'application/json',

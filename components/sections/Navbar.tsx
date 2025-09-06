@@ -1,5 +1,7 @@
+"use client";
+
 import { Menu } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -14,6 +16,7 @@ import {
 } from "../ui/navbar";
 import Navigation from "../ui/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import { SignInModal } from "../ui/signin-modal";
 
 /**
  * Configuration for individual navigation links in the mobile menu
@@ -77,9 +80,8 @@ export default function Navbar({
     { text: "Documentation", href: siteConfig.url },
   ],
   actions = [
-    { text: "Sign in", href: siteConfig.url, isButton: false }, // 🎨 BRAND CUSTOMIZATION: Update action buttons
     {
-      text: "Get Started",
+      text: "Sign in",
       href: "https://www.claygrounds.com",
       isButton: true,
       variant: "default",
@@ -89,6 +91,7 @@ export default function Navbar({
   customNavigation, // 🎨 BRAND CUSTOMIZATION: Provide custom navigation component
   className, // 🎨 BRAND CUSTOMIZATION: Add custom styling classes
 }: NavbarProps) {
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   return (
     // 🎨 MAIN HEADER CONTAINER: Sticky header with backdrop blur effect
     <header className={cn("sticky top-0 z-50 w-full -mb-4 px-4 pb-4", className)} style={{ position: 'sticky', top: 0 }}>
@@ -120,14 +123,17 @@ export default function Navbar({
                 <Button
                   key={index}
                   variant={action.variant || "default"}
-                  asChild
-                  className="hidden md:flex"
+                  onClick={() => {
+                    if (action.text === "Sign in") {
+                      setIsSignInModalOpen(true);
+                    } else {
+                      window.open(action.href, '_blank');
+                    }
+                  }}
                 >
-                  <a href={action.href}>
-                    {action.icon}
-                    {action.text}
-                    {action.iconRight}
-                  </a>
+                  {action.icon}
+                  {action.text}
+                  {action.iconRight}
                 </Button>
               ) : (
                 // 🎨 LINK STYLE ACTION: Rendered as a plain text link
@@ -184,6 +190,12 @@ export default function Navbar({
           </NavbarRight>
         </NavbarComponent>
       </div>
+      
+      {/* 🎨 SIGN IN MODAL: Modal for user authentication */}
+      <SignInModal 
+        open={isSignInModalOpen} 
+        onOpenChange={setIsSignInModalOpen} 
+      />
     </header>
   );
 }

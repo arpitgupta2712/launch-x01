@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 
 import { ThemeProvider } from "@/components/contexts/theme-provider";
 import { AppDataProvider } from "@/lib/contexts/app-data-context";
+import { AuthProvider } from "@/lib/contexts/auth-context";
 import { inter } from "@/lib/fonts";
 
 import { siteConfig } from "../config/site";
@@ -69,9 +70,11 @@ export default function RootLayout({
     <html lang="en" style={{ colorScheme: "dark" }} className="dark">
       <body className={`${inter.className} bg-background antialiased overflow-x-hidden font-sans`}>
         <ThemeProvider>
-          <AppDataProvider>
-            {children}
-          </AppDataProvider>
+          <AuthProvider>
+            <AppDataProvider>
+              {children}
+            </AppDataProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
