@@ -36,7 +36,14 @@ export function ProgressTracker({ operationId, onComplete, onError }: ProgressTr
       const isImportant = importantKeywords.some(keyword => message.includes(keyword));
       const isErrorOrWarn = log.level === 'error' || log.level === 'warn';
       return isImportant || isErrorOrWarn;
-    });
+    }).map(log => ({
+      ...log,
+      // Remove emojis and clean up the message
+      message: log.message
+        .replace(/[📧🚀⚙️✅🏁📋📅⏱️🏆❌]/g, '') // Remove emojis
+        .replace(/^\s*\[.*?\]\s*/, '') // Remove [uuid] prefixes
+        .trim()
+    }));
   };
 
   // Call onComplete when operation finishes
@@ -187,18 +194,31 @@ export function ProgressTracker({ operationId, onComplete, onError }: ProgressTr
 
       {/* Success Message */}
       {progress.status === 'completed' && (
-        <div className="relative z-10">
-          <Item className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <ItemIcon className="text-green-600">
-              <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-sm">✓</span>
+        <div className="relative z-10 space-y-3">
+          <Badge variant="default" className="w-full justify-center py-2">
+            Report Generated Successfully
+          </Badge>
+          
+          {/* Processed Locations */}
+          {progress.data?.processedLocations && progress.data.processedLocations.length > 0 && (
+            <div className="space-y-2">
+              <ItemTitle className="text-sm text-muted-foreground">Processed Venues</ItemTitle>
+              <div className="grid grid-cols-1 gap-2">
+                {progress.data.processedLocations.map((location, index) => (
+                  <Badge 
+                    key={index} 
+                    variant="outline" 
+                    className="justify-between"
+                  >
+                    <span>{location.name}</span>
+                    <Badge variant="secondary" size="sm">
+                      {location.status}
+                    </Badge>
+                  </Badge>
+                ))}
               </div>
-            </ItemIcon>
-            <ItemTitle className="text-green-800">Report Generated Successfully!</ItemTitle>
-            <ItemDescription className="text-green-700">
-              Your email report has been generated and sent to your email address.
-            </ItemDescription>
-          </Item>
+            </div>
+          )}
         </div>
       )}
 

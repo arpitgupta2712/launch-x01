@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import { useAuth } from '@/lib/contexts/auth-context';
 
+import { Badge } from './badge';
 import { Button } from './button';
 import { Card } from './card';
 import { Input } from './input';
@@ -230,13 +231,9 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
 
             {/* Error Display */}
             {error && (
-              <div className="p-4 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-                <div className="flex items-center gap-2">
-                  <span className="text-destructive">⚠</span>
-                  <span className="font-medium">Authentication Failed</span>
-                </div>
-                <p className="mt-1 text-destructive/80">{error}</p>
-              </div>
+              <Badge variant="destructive" className="w-full justify-center py-2">
+                Authentication Failed
+              </Badge>
             )}
           </Card>
 

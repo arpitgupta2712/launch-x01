@@ -24,6 +24,12 @@ interface ProgressData {
     operation: string;
     startDate: string;
     endDate: string;
+    processedLocations?: Array<{
+      id: string;
+      name: string;
+      status: string;
+      timestamp: string;
+    }>;
   };
   error?: string;
 }
