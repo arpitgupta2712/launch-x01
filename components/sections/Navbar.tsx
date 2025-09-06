@@ -75,8 +75,8 @@ export default function Navbar({
   logo = <ClayGroundsComposite logomarkVariant="chartreuse" logotypeVariant="chartreuse" logomarkWidth={32} logomarkHeight={32} logotypeWidth={120} logotypeHeight={32} gap="gap-2" />, // 🎨 BRAND CUSTOMIZATION: ClayGrounds composite with mixed colors
   homeUrl = siteConfig.url, // 🎨 BRAND CUSTOMIZATION: Set your home page URL
   mobileLinks = [
-    { text: "Getting Started", href: siteConfig.url }, // 🎨 BRAND CUSTOMIZATION: Update mobile menu links
-    { text: "Components", href: siteConfig.url },
+    { text: "Server", href: "https://www.partner.claygrounds.com" }, // 🎨 BRAND CUSTOMIZATION: Update mobile menu links
+    { text: "Vault", href: "#db" },
     { text: "Systems", href: "#pricing" },
   ],
   actions = [

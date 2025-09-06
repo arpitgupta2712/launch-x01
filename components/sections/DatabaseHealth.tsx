@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  ActivityIcon,
-  BuildingIcon,
-  CreditCardIcon,
-  FileTextIcon,
-  SquarePenIcon,
-  UsersIcon,
+  RefreshCcwIcon,
+  TargetIcon,
+  LandPlot,
+  HandshakeIcon,
+  IdCardIcon,
+  IndianRupeeIcon,
+  WalletIcon,
 } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -58,18 +59,18 @@ function mapHealthDataToItems(healthData: HealthData): ItemProps[] {
     locations: 'Locations',
     employees: 'Employees',
     tasks: 'Tasks',
-    bookingsPayments: 'Hudle',
+    bookingsPayments: 'Bookings',
     licenses: 'Licenses',
     cashbook: 'Cashbook',
   };
 
   const moduleIcons: Record<string, ReactNode> = {
-    locations: <BuildingIcon className="size-6 stroke-1" />,
-    employees: <UsersIcon className="size-6 stroke-1" />,
-    tasks: <FileTextIcon className="size-6 stroke-1" />,
-    bookingsPayments: <CreditCardIcon className="size-6 stroke-1" />,
-    licenses: <SquarePenIcon className="size-6 stroke-1" />,
-    cashbook: <ActivityIcon className="size-6 stroke-1" />,
+    locations: <LandPlot className="size-6 stroke-1" />,
+    employees: <IdCardIcon className="size-6 stroke-1" />,
+    tasks: <TargetIcon className="size-6 stroke-1" />,
+    bookingsPayments: <IndianRupeeIcon className="size-6 stroke-1" />,
+    licenses: <HandshakeIcon className="size-6 stroke-1" />,
+    cashbook: <WalletIcon className="size-6 stroke-1" />,
   };
 
   // Custom order mapping for grid display
@@ -99,7 +100,7 @@ function mapHealthDataToItems(healthData: HealthData): ItemProps[] {
     items.push({
       title: displayName,
       description: `${recordCount} records • ${status}`,
-      icon: moduleIcons[name] || <ActivityIcon className="size-6 stroke-1" />,
+      icon: moduleIcons[name] || <WalletIcon className="size-6 stroke-1" />,
       order: moduleOrder[name] || 999, // Default to end if not in order mapping
     });
 
@@ -108,7 +109,7 @@ function mapHealthDataToItems(healthData: HealthData): ItemProps[] {
       items.push({
         title: displayName,
         description: `Last transaction: ${module.latestTransactionDate}`,
-        icon: <ActivityIcon className="size-6 stroke-1" />,
+        icon: <WalletIcon className="size-6 stroke-1" />,
         order: moduleOrder[name] + 0.5, // Place after main card
       });
     }
@@ -117,7 +118,7 @@ function mapHealthDataToItems(healthData: HealthData): ItemProps[] {
       items.push({
         title: displayName,
         description: `Last slot: ${module.latestSlotDate}`,
-        icon: <CreditCardIcon className="size-6 stroke-1" />,
+        icon: <IndianRupeeIcon className="size-6 stroke-1" />,
         order: moduleOrder[name] + 0.5, // Place after main card
       });
     }
@@ -137,7 +138,7 @@ export default function DatabaseHealth({
   const healthItems = healthData ? mapHealthDataToItems(healthData) : [];
 
   return (
-    <Section className={className}>
+    <Section id="db" className={className}>
       <div className="max-w-container mx-auto flex flex-col items-center gap-6 sm:gap-20">
         <div className="flex flex-col items-center gap-4">
           <h2 className="max-w-[560px] text-center text-3xl leading-tight font-semibold sm:text-5xl sm:leading-tight">
@@ -152,7 +153,7 @@ export default function DatabaseHealth({
             className="gap-2"
             variant="secondary"
           >
-            <ActivityIcon className={`size-4 ${healthLoading ? 'animate-spin' : ''}`} />
+            <RefreshCcwIcon className={`size-4 ${healthLoading ? 'animate-spin' : ''}`} />
             {healthLoading ? 'Refreshing...' : 'Refresh Data'}
           </Button>
         </div>

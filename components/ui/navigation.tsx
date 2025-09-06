@@ -1,13 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 import { ReactNode } from "react";
 
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-import LaunchUI from "../logos/launch-ui";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -48,11 +47,11 @@ interface NavigationProps {
 export default function Navigation({
   menuItems = [
     {
-      title: "Getting started",
+      title: "Server",
       content: "default",
     },
     {
-      title: "Components",
+      title: "Vault",
       content: "components",
     },
     {
@@ -63,61 +62,61 @@ export default function Navigation({
   ],
   components = [
     {
-      title: "Alert Dialog",
+      title: "Locations",
       href: "/docs/primitives/alert-dialog",
       description:
-        "A modal dialog that interrupts the user with important content and expects a response.",
+        "Manage your sports facilities.",
     },
     {
-      title: "Hover Card",
+      title: "Employees",
       href: "/docs/primitives/hover-card",
       description:
-        "For sighted users to preview content available behind a link.",
+        "Manage your employees and payroll.",
     },
     {
-      title: "Progress",
+      title: "Bookings",
       href: "/docs/primitives/progress",
       description:
-        "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+        "Manage your slot bookings.",
     },
     {
-      title: "Scroll-area",
+      title: "Licenses",
       href: "/docs/primitives/scroll-area",
-      description: "Visually or semantically separates content.",
+      description: "Manage your licenses.",
     },
     {
-      title: "Tabs",
+      title: "Agreements",
       href: "/docs/primitives/tabs",
       description:
-        "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
+        "Manage your agreements.",
     },
     {
-      title: "Tooltip",
+      title: "Tasks",
       href: "/docs/primitives/tooltip",
       description:
-        "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
+        "Manage your tasks and projects.",
     },
   ],
-  logo = <LaunchUI />,
-  logoTitle = "Launch UI",
-  logoDescription = "Landing page template built with React, Shadcn/ui and Tailwind that you can copy/paste into your project.",
-  logoHref = siteConfig.url,
+  logo = <Image src="/logos/claygrounds/legacy/CG_legacy_dark.png" alt="ClayGrounds" width={96} height={96} className="mx-auto brightness-0 invert" />,
+  logoTitle = "ClayServer",
+  logoDescription = "AI powered advanced administrative system for controlling your sports empire.",
+  logoHref = "https://www.partner.claygrounds.com",
   introItems = [
     {
-      title: "Introduction",
-      href: siteConfig.url,
+      title: "GoalTech",
+      href: "https://www.goaltech.in",
       description:
-        "Re-usable components built using Radix UI and Tailwind CSS.",
+        "A sports infrastructure and technology company.",
     },
     {
-      title: "Installation",
-      href: siteConfig.url,
-      description: "How to install dependencies and structure your app.",
+      title: "ClayGrounds",
+      href: "https://www.claygrounds.com",
+      description: "A sports facility management system.",
     },
     {
-      title: "Typography",
-      href: siteConfig.url,
-      description: "Styles for headings, paragraphs, lists...etc",
+      title: "Legends Cup",
+      href: "https://www.legendscup.in",
+      description: "An Ai powered sports event management system.",
     },
   ],
 }: NavigationProps) {
@@ -146,10 +145,10 @@ export default function Navigation({
                             href={logoHref}
                           >
                             {logo}
-                            <div className="mt-4 mb-2 text-lg font-medium">
+                            <div className="mt-4 mb-2 text-lg font-medium text-center">
                               {logoTitle}
                             </div>
-                            <p className="text-muted-foreground text-sm leading-tight">
+                            <p className="text-muted-foreground text-sm leading-tight text-center">
                               {logoDescription}
                             </p>
                           </a>
