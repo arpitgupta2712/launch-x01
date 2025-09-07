@@ -18,6 +18,8 @@ interface SignInResponse {
   message?: string;
   data?: unknown;
   operationId?: string; // For progress tracking
+  venueCount?: number; // Total number of venues to be processed
+  estimatedDuration?: number; // Estimated duration in seconds
 }
 
 interface UserCredentials {
@@ -34,6 +36,8 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   operationId: string | null;
+  venueCount: number | null;
+  estimatedDuration: number | null;
   signIn: (credentials: Omit<SignInRequest, 'reportType'>) => Promise<SignInResponse>;
   signOut: () => void;
   clearError: () => void;
@@ -49,6 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [operationId, setOperationId] = useState<string | null>(null);
+  const [venueCount, setVenueCount] = useState<number | null>(null);
+  const [estimatedDuration, setEstimatedDuration] = useState<number | null>(null);
 
   const signIn = useCallback(async (credentials: Omit<SignInRequest, 'reportType'>): Promise<SignInResponse> => {
     setIsLoading(true);
@@ -88,11 +94,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setOperationId(operationId);
         }
         
+        // Extract venue count and estimated duration if present
+        const venueCount = data.venueCount;
+        const estimatedDuration = data.estimatedDuration;
+        if (venueCount !== undefined) {
+          setVenueCount(venueCount);
+        }
+        if (estimatedDuration !== undefined) {
+          setEstimatedDuration(estimatedDuration);
+        }
+        
         return {
           success: true,
           message: 'Sign in successful',
           data,
           operationId,
+          venueCount,
+          estimatedDuration,
         };
       } else {
         const errorMessage = data.message || 'Sign in failed';
@@ -120,6 +138,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserCredentials(null);
     setError(null);
     setOperationId(null);
+    setVenueCount(null);
+    setEstimatedDuration(null);
   }, []);
 
   const clearError = useCallback(() => {
@@ -137,6 +157,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       error,
       operationId,
+      venueCount,
+      estimatedDuration,
       signIn,
       signOut,
       clearError,

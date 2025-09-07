@@ -24,7 +24,7 @@ interface SignInModalProps {
 }
 
 export function SignInModal({ open, onOpenChange }: SignInModalProps) {
-  const { signIn, isLoading, error, clearError, setError, operationId, clearOperationId } = useAuth();
+  const { signIn, isLoading, error, clearError, setError, operationId, clearOperationId, venueCount, estimatedDuration } = useAuth();
   // Helper function to get previous month's first and last day (IST timezone)
   const getPreviousMonthDates = () => {
     const now = new Date();
@@ -154,6 +154,8 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
           <div className="space-y-4">
             <ProgressTracker 
               operationId={operationId} 
+              venueCount={venueCount}
+              estimatedDuration={estimatedDuration}
               onComplete={handleProgressComplete}
               onError={handleProgressError}
             />

@@ -13,12 +13,14 @@ import { Item, ItemDescription, ItemIcon, ItemTitle } from './item';
 
 interface ProgressTrackerProps {
   operationId: string | null;
+  venueCount?: number | null;
+  estimatedDuration?: number | null;
   onComplete?: () => void;
   onError?: (errorMessage: string) => void;
 }
 
-export function ProgressTracker({ operationId, onComplete, onError }: ProgressTrackerProps) {
-  const { progress, error } = useProgressTracking(operationId);
+export function ProgressTracker({ operationId, venueCount, estimatedDuration, onComplete, onError }: ProgressTrackerProps) {
+  const { progress, error } = useProgressTracking(operationId, venueCount);
 
   // Format date to natural readable format (e.g., "1st August 2025")
   const formatNaturalDate = (dateString: string) => {
@@ -179,12 +181,21 @@ export function ProgressTracker({ operationId, onComplete, onError }: ProgressTr
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm">
             <span className="text-muted-foreground">Processed</span>
             <span className="text-primary font-bold">
-              {progress.data?.processedLocations?.length || progress.current} of {progress.data?.processedLocations?.length || progress.total}
+              {progress.data?.processedLocations?.length || progress.current} of {venueCount || progress.data?.processedLocations?.length || progress.total}
             </span>
-            <span className="text-muted-foreground">in</span>
+            <span className="text-muted-foreground">venues in</span>
             <span className="text-primary font-bold">
               {progress.duration}s
             </span>
+            {estimatedDuration && (
+              <>
+                <span className="text-muted-foreground">(est.</span>
+                <span className="text-primary font-bold">
+                  {estimatedDuration}s
+                </span>
+                <span className="text-muted-foreground">)</span>
+              </>
+            )}
           </div>
         </div>
       </div>

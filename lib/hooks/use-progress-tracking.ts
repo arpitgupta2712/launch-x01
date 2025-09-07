@@ -39,7 +39,7 @@ interface ProgressResponse {
   progress: ProgressData;
 }
 
-export const useProgressTracking = (operationId: string | null) => {
+export const useProgressTracking = (operationId: string | null, venueCount?: number | null) => {
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +61,18 @@ export const useProgressTracking = (operationId: string | null) => {
         const data: ProgressResponse = await response.json();
 
         if (data.success) {
-          setProgress(data.progress);
+          // Enhance progress data with venue count if available
+          const enhancedProgress = {
+            ...data.progress,
+            // Use venue count from API response if available, otherwise use the provided venueCount
+            total: data.progress.total || venueCount || data.progress.total,
+            // Calculate progress percentage based on venue count if available
+            progress: venueCount && data.progress.current 
+              ? Math.min(100, Math.round((data.progress.current / venueCount) * 100))
+              : data.progress.progress
+          };
+          
+          setProgress(enhancedProgress);
 
           // Stop polling when complete
           if (data.progress.status === 'completed' || data.progress.status === 'failed' || data.progress.status === 'timeout') {
@@ -85,7 +96,7 @@ export const useProgressTracking = (operationId: string | null) => {
     };
 
     pollProgress();
-  }, [operationId]);
+  }, [operationId, venueCount]);
 
   useEffect(() => {
     if (operationId) {
