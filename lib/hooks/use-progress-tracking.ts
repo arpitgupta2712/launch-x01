@@ -61,27 +61,14 @@ export const useProgressTracking = (operationId: string | null, venueCount?: num
         const data: ProgressResponse = await response.json();
 
         if (data.success) {
-          // Calculate progress based on processed locations if available
-          const processedCount = data.progress.data?.processedLocations?.length || 0;
-          const totalCount = venueCount || data.progress.total || 0;
-          
-          // Calculate progress percentage based on actual processed venues
-          let calculatedProgress = 0;
-          if (totalCount > 0) {
-            calculatedProgress = Math.min(100, Math.round((processedCount / totalCount) * 100));
-          } else if (data.progress.progress) {
-            // Fallback to API progress if no venue count available
-            calculatedProgress = data.progress.progress;
-          }
-          
-          // Enhance progress data with venue count if available
+          // Use the progress data directly from API response
+          // The API already provides current, total, and progress percentage
           const enhancedProgress = {
             ...data.progress,
-            // Use venue count from API response if available, otherwise use the provided venueCount
-            total: totalCount,
-            current: processedCount,
-            // Use calculated progress based on actual processed venues
-            progress: calculatedProgress
+            // Use API values directly - they're already calculated correctly
+            total: data.progress.total || venueCount || 0,
+            current: data.progress.current || 0,
+            progress: data.progress.progress || 0
           };
           
           setProgress(enhancedProgress);

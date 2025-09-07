@@ -3,8 +3,10 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 
 import { ThemeProvider } from "@/components/contexts/theme-provider";
+import { ToastProvider } from "@/components/ui/toast";
 import { AppDataProvider } from "@/lib/contexts/app-data-context";
 import { AuthProvider } from "@/lib/contexts/auth-context";
+import { OperationProvider } from "@/lib/contexts/operation-context";
 import { inter } from "@/lib/fonts";
 
 import { siteConfig } from "../config/site";
@@ -70,11 +72,15 @@ export default function RootLayout({
     <html lang="en" style={{ colorScheme: "dark" }} className="dark">
       <body className={`${inter.className} bg-background antialiased overflow-x-hidden font-sans`}>
         <ThemeProvider>
-          <AuthProvider>
-            <AppDataProvider>
-              {children}
-            </AppDataProvider>
-          </AuthProvider>
+          <ToastProvider>
+            <OperationProvider>
+              <AuthProvider>
+                <AppDataProvider>
+                  {children}
+                </AppDataProvider>
+              </AuthProvider>
+            </OperationProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

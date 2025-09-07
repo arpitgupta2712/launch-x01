@@ -21,6 +21,12 @@ interface ProgressTrackerProps {
 
 export function ProgressTracker({ operationId, venueCount, estimatedDuration, onComplete, onError }: ProgressTrackerProps) {
   const { progress, error } = useProgressTracking(operationId, venueCount);
+  const hasCalledComplete = React.useRef(false);
+
+  // Reset the completion flag when operation ID changes
+  React.useEffect(() => {
+    hasCalledComplete.current = false;
+  }, [operationId]);
 
   // Format date to natural readable format (e.g., "1st August 2025")
   const formatNaturalDate = (dateString: string) => {
@@ -69,17 +75,20 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
     }));
   };
 
-  // Call onComplete when operation finishes
+  // Call onComplete when operation finishes (only once)
   React.useEffect(() => {
     if (progress && (progress.status === 'completed' || progress.status === 'failed' || progress.status === 'timeout')) {
-      onComplete?.();
-      
-      // If operation failed with authentication error, notify parent
-      if (progress.status === 'failed' && progress.error && onError) {
-        onError(progress.error);
+      if (!hasCalledComplete.current) {
+        hasCalledComplete.current = true;
+        onComplete?.();
+        
+        // If operation failed with authentication error, notify parent
+        if (progress.status === 'failed' && progress.error && onError) {
+          onError(progress.error);
+        }
       }
     }
-  }, [progress, onComplete, onError]);
+  }, [progress?.status, onComplete, onError]);
 
   // Debug: Log progress data to understand the structure
   React.useEffect(() => {
@@ -156,7 +165,8 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
       {/* Progress Header */}
       <div className="flex items-center justify-between relative z-10">
         <ItemTitle className="text-lg">
-          {progress.data?.operation === 'process' ? 'Report Processing' : 'Email Report Generation'}
+          {progress.data?.operation === 'bookingsProcess' ? 'Booking Files Processing' : 
+           progress.data?.operation === 'process' ? 'Report Processing' : 'Email Report Generation'}
         </ItemTitle>
         <Badge variant={getStatusColor(progress.status)} className="animate-pulse">
           {progress.status.toUpperCase()}
@@ -185,7 +195,9 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
             <span className="text-primary font-bold">
               {progress.current} of {progress.total}
             </span>
-            <span className="text-muted-foreground">venues in</span>
+            <span className="text-muted-foreground">
+              {progress.data?.operation === 'bookingsProcess' ? 'files' : 'venues'} in
+            </span>
             <span className="text-primary font-bold">
               {progress.duration}s
             </span>
@@ -232,16 +244,34 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
       {progress.status === 'completed' && (
         <div className="relative z-10 space-y-3">
           <Badge variant="default" className="w-full justify-center py-2">
-            {progress.data?.operation === 'process' ? 'Reports Processed Successfully' : 'Report Generated Successfully'}
+            {progress.data?.operation === 'bookingsProcess' ? 'Booking Files Processed Successfully' : 
+             progress.data?.operation === 'process' ? 'Reports Processed Successfully' : 'Report Generated Successfully'}
           </Badge>
+          
+          {/* Success Summary */}
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="text-center space-y-2">
+              <div className="text-2xl font-bold text-green-800">
+                {progress.current || 0}
+              </div>
+              <div className="text-sm text-green-700">
+                {progress.data?.operation === 'bookingsProcess' ? 'Files Processed Successfully' : 'Venues Processed Successfully'}
+              </div>
+              {progress.duration && (
+                <div className="text-xs text-green-600">
+                  Completed in {progress.duration}s
+                </div>
+              )}
+            </div>
+          </div>
           
           {/* Processed Locations */}
           {progress.data?.processedLocations && progress.data.processedLocations.length > 0 ? (
             <div className="space-y-2">
               <ItemTitle className="text-sm text-muted-foreground">Processed Venues</ItemTitle>
-              <div className="max-h-128 overflow-y-auto border rounded-lg p-2 bg-muted/10">
+              <div className="max-h-32 overflow-y-auto border rounded-lg p-2 bg-muted/10">
                 <div className="grid grid-cols-1 gap-2">
-                  {progress.data.processedLocations.map((location, index) => (
+                  {progress.data.processedLocations.slice(0, 10).map((location, index) => (
                     <Badge 
                       key={index} 
                       variant="outline" 
@@ -253,6 +283,11 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
                       </Badge>
                     </Badge>
                   ))}
+                  {progress.data.processedLocations.length > 10 && (
+                    <div className="text-xs text-muted-foreground text-center py-1">
+                      ... and {progress.data.processedLocations.length - 10} more
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

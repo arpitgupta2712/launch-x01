@@ -14,7 +14,12 @@ export const API_CONFIG = {
     company1: '/api/hudle/users/search/phone/9999099867?includes=business_profile',
     company2: '/api/hudle/users/search/phone/9910545678?includes=business_profile',
     signIn: '/api/hudle/reports/email',
-    processReports: '/api/hudle/reports/process'
+    processReports: '/api/hudle/reports/process',
+    uploadBookingFile: '/api/storage/bookings/upload',
+    listBookingFiles: '/api/storage/bookings/files',
+    listValidBookingFiles: '/api/storage/bookings/files/valid',
+    deleteBookingFile: '/api/storage/bookings/files',
+    deleteAllBookingFiles: '/api/storage/bookings/files'
   },
   defaultHeaders: {
     'Accept': 'application/json',
