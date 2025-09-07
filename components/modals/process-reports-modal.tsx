@@ -99,7 +99,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
       if (response.ok) {
         // Extract operation ID if present
         const operationId = data.operationId || data.data?.operationId;
-        if (operationId) {
+        if (operationId && typeof operationId === 'string') {
           // Create operation in global state
           const operation = {
             id: operationId,
