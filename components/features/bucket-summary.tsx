@@ -29,7 +29,7 @@ interface ValidFilesResponse {
   message?: string;
 }
 
-export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: BucketFilesSummaryProps) {
+export function BucketFilesSummary({ onRefresh, className = "" }: BucketFilesSummaryProps) {
   const [files, setFiles] = useState<BucketFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

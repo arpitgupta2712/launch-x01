@@ -1,12 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 import { API_CONFIG } from '@/lib/api/config';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { useOperation } from '@/lib/contexts/operation-context';
 import { useProgressPersistence } from '@/lib/hooks/use-progress-persistence';
+
+interface ProgressSummary {
+  id: string;
+  operation: string;
+  status: 'completed' | 'failed' | 'timeout';
+  total: number;
+  processed: number;
+  duration: number;
+  startTime: string;
+  endTime: string;
+  venueNames?: Record<string, string>;
+  processedLocations?: Array<{
+    id: string;
+    name: string;
+    status: string;
+    timestamp: string;
+  }>;
+  processedVenuesFromLogs?: string[];
+  error?: string;
+}
 
 import { BucketFilesSummary } from '../features/bucket-summary';
 import { FileUploader } from '../features/file-uploader';
@@ -36,10 +56,10 @@ interface ReportGenerationModalProps {
 type ActionType = 'emailReports' | 'bucketFiles' | 'fileUpload' | null;
 
 export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationModalProps) {
-  const { signIn, isLoading: authLoading, error: authError, clearError: clearAuthError, setError: setAuthError, operationId, clearOperationId, venueCount, estimatedDuration } = useAuth();
+  const { signIn, isLoading: authLoading, error: authError, clearError: clearAuthError, setError: setAuthError, clearOperationId } = useAuth();
   const { currentOperation, setCurrentOperation, isOperationRunning } = useOperation();
   const { addToast } = useToast();
-  const { lastSummary, clearProgressSummary } = useProgressPersistence();
+  const { recentSummaries, clearProgressSummary } = useProgressPersistence();
 
   // Simplified state management
   const [selectedAction, setSelectedAction] = useState<ActionType>(null);
@@ -83,35 +103,6 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
     }
   }, [open, currentOperation, isOperationRunning]);
 
-  // Helper function to get previous month's first and last day (IST timezone)
-  const getPreviousMonthDates = () => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    
-    // Get previous month
-    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-    
-    // First day of previous month
-    const firstDay = new Date(previousYear, previousMonth, 1);
-    
-    // Last day of previous month (first day of current month minus 1 day)
-    const lastDay = new Date(currentYear, currentMonth, 0);
-    
-    // Format dates in local timezone (IST) as YYYY-MM-DD
-    const formatDate = (date: Date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-    
-    return {
-      startDate: formatDate(firstDay),
-      endDate: formatDate(lastDay)
-    };
-  };
 
   // Input change handler
   const handleInputChange = (field: string, value: string) => {
@@ -189,21 +180,13 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
       } else {
         setAuthError('Authentication failed');
       }
-    } catch (error) {
+    } catch {
       setAuthError('Authentication failed');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // File management handlers
-  const handleExistingFileSelect = (fileName: string) => {
-    setSelectedExistingFile(fileName);
-  };
-
-  const handleUploadNewFile = () => {
-    setSelectedAction('fileUpload');
-  };
 
   const handleUploadSuccess = (fileName: string | string[]) => {
     const fileNames = Array.isArray(fileName) ? fileName : [fileName];
@@ -286,8 +269,8 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
       } else {
         throw new Error(data.message || 'Processing failed');
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Processing failed';
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Processing failed';
       setProcessingError(errorMessage);
       addToast({
         title: 'Processing Failed',
@@ -314,15 +297,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
       duration: 10000, // Longer duration to give time to read
     });
     
-    // Return to selection after completion
-    setTimeout(() => {
-      setSelectedAction(null);
-      setSelectedExistingFile(null);
-      setUploadedFileName(null);
-      setUploadError(null);
-      setProcessingError(null);
-      setCurrentOperation(null);
-    }, 10000);
+    // Don't auto-dismiss - let user manually close or start new operation
   }, [currentOperation, addToast]);
 
   const handleProgressError = React.useCallback((errorMessage: string) => {
@@ -436,19 +411,22 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
         <div className="py-6">
           {/* Step Navigation */}
           <div className="mb-6">
-            <StepNavigation steps={steps} currentStep={getCurrentStep()} />
+            <StepNavigation steps={steps} />
           </div>
 
           <Divider className="my-6" />
 
-          {/* Last Run Summary */}
-          {lastSummary && !currentOperation && (
+          {/* Recent Operations Summary */}
+          {recentSummaries.length > 0 && !currentOperation && (
             <div className="mb-6">
               <Card className="p-4 border-accent/20 bg-accent/5">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-accent" />
-                    <h3 className="font-medium text-sm">Last Run Summary</h3>
+                    <h3 className="font-medium text-sm">Recent Operations</h3>
+                    <Badge variant="outline" size="sm" className="text-xs">
+                      {recentSummaries.length} operations
+                    </Badge>
                   </div>
                   <Button
                     variant="ghost"
@@ -459,37 +437,66 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
                     ×
                   </Button>
                 </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Operation:</span>
-                    <Badge variant="outline" className="text-xs">
-                      {lastSummary.operation === 'bookingsProcess' ? 'File Processing' : 
-                       lastSummary.operation === 'emailReports' ? 'Email Reports' : 
-                       lastSummary.operation}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Status:</span>
-                    <Badge 
-                      variant={lastSummary.status === 'completed' ? 'accent' : 'destructive'} 
-                      className="text-xs"
-                    >
-                      {lastSummary.status}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Processed:</span>
-                    <span className="font-medium">
-                      {lastSummary.processed} of {lastSummary.total} {lastSummary.operation === 'bookingsProcess' ? 'files' : 'venues'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Duration:</span>
-                    <span className="font-medium">{lastSummary.duration}s</span>
-                  </div>
-                  {lastSummary.error && (
-                    <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded text-xs text-destructive">
-                      {lastSummary.error}
+                <div className="space-y-3">
+                  {recentSummaries.slice(0, 3).map((summary) => (
+                    <div key={summary.id} className="p-3 bg-background/50 rounded border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {summary.operation === 'bookingsProcess' ? 'File Processing' : 
+                             summary.operation === 'emailReports' ? 'Email Reports' : 
+                             summary.operation}
+                          </Badge>
+                          <Badge 
+                            variant={summary.status === 'completed' ? 'accent' : 'destructive'} 
+                            className="text-xs"
+                          >
+                            {summary.status}
+                          </Badge>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date((summary as ProgressSummary & { storedAt?: string }).storedAt || summary.endTime).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Processed:</span>
+                          <span className="font-medium">
+                            {summary.processed} of {summary.total} {summary.operation === 'bookingsProcess' ? 'files' : 'venues'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Duration:</span>
+                          <span className="font-medium">{summary.duration}s</span>
+                        </div>
+                      </div>
+                      {summary.processedVenuesFromLogs && summary.processedVenuesFromLogs.length > 0 && (
+                        <div className="mt-2">
+                          <div className="text-xs text-muted-foreground mb-1">Recent Venues:</div>
+                          <div className="flex flex-wrap gap-1">
+                            {summary.processedVenuesFromLogs.slice(0, 3).map((venue, venueIndex) => (
+                              <Badge key={venueIndex} variant="secondary" size="sm" className="text-xs">
+                                {venue}
+                              </Badge>
+                            ))}
+                            {summary.processedVenuesFromLogs.length > 3 && (
+                              <Badge variant="outline" size="sm" className="text-xs">
+                                +{summary.processedVenuesFromLogs.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {summary.error && (
+                        <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded text-xs text-destructive">
+                          {summary.error}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {recentSummaries.length > 3 && (
+                    <div className="text-xs text-muted-foreground text-center">
+                      ... and {recentSummaries.length - 3} more operations
                     </div>
                   )}
                 </div>

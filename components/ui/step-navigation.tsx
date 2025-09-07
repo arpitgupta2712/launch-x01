@@ -1,17 +1,17 @@
 "use client";
 
 import { 
-  Check, 
-  Circle, 
   AlertCircle, 
-  Loader2,
+  Check, 
   ChevronRight,
+  Loader2,
   Sparkles,
   Target,
-  Zap,
-  Trophy
+  Trophy,
+  Zap
 } from "lucide-react";
 import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
 interface Step {
@@ -31,10 +31,9 @@ interface StepNavigationProps {
 
 export function StepNavigation({ 
   steps, 
-  currentStep, 
   className,
   onStepClick 
-}: StepNavigationProps) {
+}: Omit<StepNavigationProps, 'currentStep'>) {
   const [hoveredStep, setHoveredStep] = React.useState<string | null>(null);
   
   // Default icons for steps if not provided
@@ -215,8 +214,6 @@ export function StepNavigation({
 
 // Example usage component for demonstration
 export default function StepNavigationDemo() {
-  const [currentStep, setCurrentStep] = React.useState('step2');
-  
   const steps: Step[] = [
     {
       id: 'step1',
@@ -253,7 +250,6 @@ export default function StepNavigationDemo() {
       <div className="bg-card border rounded-lg shadow-sm">
         <StepNavigation 
           steps={steps} 
-          currentStep={currentStep}
           onStepClick={(stepId) => console.log('Clicked:', stepId)}
         />
       </div>

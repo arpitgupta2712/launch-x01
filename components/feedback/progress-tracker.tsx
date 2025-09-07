@@ -2,14 +2,11 @@
 
 import React from 'react';
 
-import { useProgressTracking } from '@/lib/hooks/use-progress-tracking';
 import { useProgressPersistence } from '@/lib/hooks/use-progress-persistence';
+import { useProgressTracking } from '@/lib/hooks/use-progress-tracking';
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Badge } from '../ui/badge';
-import { Beam } from '../ui/beam';
-import { Card, CardContent, CardDescription, CardHeader } from '../ui/card';
-import { Divider } from '../ui/divider';
+import { Card } from '../ui/card';
 import { Item, ItemDescription, ItemIcon, ItemTitle } from '../ui/item';
 
 interface ProgressTrackerProps {
@@ -20,7 +17,7 @@ interface ProgressTrackerProps {
   onError?: (errorMessage: string) => void;
 }
 
-export function ProgressTracker({ operationId, venueCount, estimatedDuration, onComplete, onError }: ProgressTrackerProps) {
+export function ProgressTracker({ operationId, venueCount, onComplete, onError }: ProgressTrackerProps) {
   const { progress, error } = useProgressTracking(operationId, venueCount);
   const { saveProgressSummary } = useProgressPersistence();
   const hasCalledComplete = React.useRef(false);
@@ -60,31 +57,102 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
     return location.name || `Venue ${location.id.substring(0, 8)}...`;
   };
 
-  // Filter logs to show only important/summarized information
-  const getFilteredLogs = (logs: Array<{ message: string; timestamp: string; level: string }>) => {
-    if (!logs) return [];
+  // Extract currently processing venue from logs with better parsing
+  const getCurrentVenue = () => {
+    if (!progress?.logs) return null;
     
-    // Keywords that indicate important logs
-    const importantKeywords = [
-      'summary', 'complete', 'finished', 'success', 'error', 'failed',
-      'total', 'duration', 'rate', 'export', 'batch', 'process'
-    ];
+    // Look for the most recent processing log
+    const processingLogs = progress.logs.filter(log => 
+      log.message.includes("🏢 Processing bookings for:") ||
+      log.message.includes("Processing bookings for:") ||
+      log.message.includes("Processing venue:")
+    );
     
-    // Filter logs that contain important keywords or are error/warn level
-    return logs.filter(log => {
-      const message = log.message.toLowerCase();
-      const isImportant = importantKeywords.some(keyword => message.includes(keyword));
-      const isErrorOrWarn = log.level === 'error' || log.level === 'warn';
-      return isImportant || isErrorOrWarn;
-    }).map(log => ({
-      ...log,
-      // Remove emojis and clean up the message
-      message: log.message
-        .replace(/[📧🚀⚙️✅🏁📋📅⏱️🏆❌]/g, '') // Remove emojis
-        .replace(/^\s*\[.*?\]\s*/, '') // Remove [uuid] prefixes
-        .trim()
-    }));
+    if (processingLogs.length > 0) {
+      const latestLog = processingLogs[processingLogs.length - 1];
+      // Try multiple patterns to extract venue name
+      const patterns = [
+        /🏢 Processing bookings for: (.+?)(?:\s*\(|$)/,
+        /Processing bookings for: (.+?)(?:\s*\(|$)/,
+        /Processing venue: (.+?)(?:\s*\(|$)/
+      ];
+      
+      for (const pattern of patterns) {
+        const match = latestLog.message.match(pattern);
+        if (match) {
+          return match[1].trim();
+        }
+      }
+    }
+    return null;
   };
+
+  // Extract all processed venues from logs with better parsing
+  const getProcessedVenues = React.useCallback(() => {
+    if (!progress?.logs) return [];
+    
+    const processedVenues: Array<{name: string, status: 'success' | 'failed', timestamp: string}> = [];
+    
+    progress.logs.forEach(log => {
+      // Success patterns
+      if (log.message.includes("✅ File processed successfully:") || 
+          log.message.includes("File processed successfully:")) {
+        const patterns = [
+          /for: ([^(]+)/,
+          /for ([^(]+)/,
+          /venue: ([^(]+)/,
+          /Processing ([^(]+) completed/
+        ];
+        
+        for (const pattern of patterns) {
+          const match = log.message.match(pattern);
+          if (match) {
+            processedVenues.push({
+              name: match[1].trim(),
+              status: 'success',
+              timestamp: log.timestamp
+            });
+            break;
+          }
+        }
+      }
+      
+      // Failure patterns
+      if (log.message.includes("❌ Failed to process") || 
+          log.message.includes("Failed to process") ||
+          log.message.includes("Error processing")) {
+        const patterns = [
+          /for: ([^(]+)/,
+          /for ([^(]+)/,
+          /venue: ([^(]+)/,
+          /Processing ([^(]+) failed/
+        ];
+        
+        for (const pattern of patterns) {
+          const match = log.message.match(pattern);
+          if (match) {
+            processedVenues.push({
+              name: match[1].trim(),
+              status: 'failed',
+              timestamp: log.timestamp
+            });
+            break;
+          }
+        }
+      }
+    });
+    
+    // Remove duplicates and sort by timestamp
+    const uniqueVenues = processedVenues.reduce((acc, venue) => {
+      if (!acc.find(v => v.name === venue.name)) {
+        acc.push(venue);
+      }
+      return acc;
+    }, [] as typeof processedVenues);
+    
+    return uniqueVenues.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  }, [progress?.logs]);
+
 
   // Call onComplete when operation finishes (only once)
   React.useEffect(() => {
@@ -94,6 +162,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
         
         // Save progress summary to localStorage
         if (operationId) {
+          const processedVenues = getProcessedVenues();
           saveProgressSummary({
             id: operationId,
             operation: progress.data?.operation || 'unknown',
@@ -106,6 +175,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
             error: progress.error,
             venueNames: progress.data?.venueNames,
             processedLocations: progress.data?.processedLocations,
+            processedVenuesFromLogs: processedVenues.map(v => v.name), // Add venue names extracted from logs
           });
         }
         
@@ -117,7 +187,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
         }
       }
     }
-  }, [progress, onComplete, onError, operationId, saveProgressSummary]);
+  }, [progress, onComplete, onError, operationId, saveProgressSummary, getProcessedVenues]);
 
   // Debug: Log progress data to understand the structure
   React.useEffect(() => {
@@ -174,16 +244,6 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
     }
   };
 
-  const getLogLevelColor = (level: string) => {
-    switch (level) {
-      case 'error': return 'text-destructive';
-      case 'warn': return 'text-yellow-500';
-      case 'info': return 'text-primary';
-      default: return 'text-muted-foreground';
-    }
-  };
-
-  const filteredLogs = getFilteredLogs(progress.logs || []);
 
   return (
     <Card className="p-6 space-y-6 relative overflow-hidden">
@@ -215,6 +275,88 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
         </div>
       </div>
 
+      {/* Current Venue Processing - Enhanced */}
+      {progress.data?.operation === 'bookingsProcess' && (
+        <div className="mb-4 p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                <span className="text-lg">🏢</span>
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm text-muted-foreground mb-1">Currently processing:</div>
+              <div className="font-semibold text-primary truncate">
+                {getCurrentVenue() || `Venue ${progress.current + 1} of ${progress.total}`}
+              </div>
+              {getCurrentVenue() && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Processing in progress...
+                </div>
+              )}
+            </div>
+            {progress.status === 'running' && (
+              <div className="flex-shrink-0">
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Processed Venues List - Enhanced */}
+      {progress.data?.operation === 'bookingsProcess' && getProcessedVenues().length > 0 && (
+        <div className="mb-4 p-4 bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/30 rounded-lg">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-muted-foreground">
+                Processed Venues ({getProcessedVenues().length})
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-muted-foreground">
+                  {getProcessedVenues().filter(v => v.status === 'success').length} done
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <span className="text-muted-foreground">
+                  {getProcessedVenues().filter(v => v.status === 'failed').length} failed
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="max-h-96 overflow-y-auto">
+            <div className="space-y-2">
+              {getProcessedVenues().map((venue, index) => (
+                <div key={index} className="flex items-center justify-between p-2 bg-background/50 rounded border">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      venue.status === 'success' ? 'bg-green-500' : 'bg-red-500'
+                    }`}></div>
+                    <span className="text-sm font-medium truncate">{venue.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Badge 
+                      variant={venue.status === 'success' ? 'accent' : 'destructive'} 
+                      size="sm"
+                      className="text-xs"
+                    >
+                      {venue.status === 'success' ? '✓' : '✗'}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(venue.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Progress Info - AdminStats Style */}
       <div className="relative z-10">
         <div className="text-center p-4 bg-muted/50 rounded-lg">
@@ -236,7 +378,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
       </div>
 
       {/* Date Range Display */}
-      {progress.data && (
+      {progress.data && progress.data.startDate && progress.data.endDate && (
         <div className="relative z-10">
           <Badge variant="outline" className="w-full justify-center py-2">
             {formatNaturalDate(progress.data.startDate)} to {formatNaturalDate(progress.data.endDate)}
@@ -315,46 +457,6 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
         </div>
       )}
 
-      {/* Operation Logs - Disabled for cleaner UI */}
-      {false && filteredLogs.length > 0 && (
-        <div className="relative z-10">
-          <Divider variant="arrow" size="sm" />
-          <Accordion type="single" collapsible>
-            <AccordionItem value="logs">
-              <AccordionTrigger className="w-full justify-between">
-                <span>Important Logs ({filteredLogs.length})</span>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 max-h-48 overflow-y-auto">
-                  {filteredLogs.map((log, index) => (
-                    <Card key={index} className="p-3">
-                      <CardHeader className="p-0 pb-2">
-                        <div className="flex items-center justify-between">
-                          <Badge 
-                            variant={log.level === 'error' ? 'destructive' : log.level === 'warn' ? 'secondary' : 'outline'}
-                            size="sm"
-                            className="text-xs"
-                          >
-                            {log.level.toUpperCase()}
-                          </Badge>
-                          <CardDescription className="text-xs text-muted-foreground">
-                            {new Date(log.timestamp).toLocaleTimeString()}
-                          </CardDescription>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-0">
-                        <CardDescription className={`text-sm ${getLogLevelColor(log.level)}`}>
-                          {log.message}
-                        </CardDescription>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      )}
     </Card>
   );
 }

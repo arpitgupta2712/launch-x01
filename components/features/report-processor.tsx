@@ -1,30 +1,24 @@
 "use client";
 
-import React from 'react';
 import { 
-  Mail, 
-  FolderOpen, 
-  Upload, 
-  Sparkles,
-  Clock,
-  FileSearch,
-  CloudUpload,
-  Zap,
   ArrowRight,
-  Calendar,
-  Database,
-  FileUp,
-  Activity,
   BarChart3,
-  TrendingUp,
+  CloudUpload,
+  Database,
+  FolderOpen, 
   Inbox,
-  Send
+  Mail, 
+  Sparkles,
+  Upload, 
+  Zap
 } from 'lucide-react';
+import React from 'react';
+
+import { cn } from '@/lib/utils';
 
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { cn } from '@/lib/utils';
 
 interface ReportMethod {
   id: string;
