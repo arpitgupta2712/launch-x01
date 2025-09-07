@@ -24,6 +24,8 @@ interface ProgressData {
     operation: string;
     startDate: string;
     endDate: string;
+    fileNames?: string;
+    venueNames?: Record<string, string>; // venue ID -> venue name mapping
     processedLocations?: Array<{
       id: string;
       name: string;

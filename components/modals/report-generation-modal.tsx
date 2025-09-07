@@ -316,7 +316,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
       setUploadError(null);
       setProcessingError(null);
       setCurrentOperation(null);
-    }, 3000);
+    }, 10000);
   }, [currentOperation, addToast]);
 
   const handleProgressError = React.useCallback((errorMessage: string) => {
@@ -336,7 +336,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
         title: 'Operation in Progress',
         description: 'Cannot close modal while operation is running.',
         type: 'warning',
-        duration: 3000,
+        duration: 5000,
       });
       return;
     }

@@ -49,6 +49,15 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
     return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
   };
 
+  // Get venue name from venueNames mapping or fallback to location name/ID
+  const getVenueName = (location: { id: string; name: string }) => {
+    if (progress?.data?.venueNames?.[location.id]) {
+      return progress.data.venueNames[location.id];
+    }
+    // Fallback to location name if available, otherwise show truncated ID
+    return location.name || `Venue ${location.id.substring(0, 8)}...`;
+  };
+
   // Filter logs to show only important/summarized information
   const getFilteredLogs = (logs: Array<{ message: string; timestamp: string; level: string }>) => {
     if (!logs) return [];
@@ -97,6 +106,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
         current: progress.current,
         total: progress.total,
         processedLocations: progress.data?.processedLocations?.length,
+        venueNames: progress.data?.venueNames,
         data: progress.data
       });
     }
@@ -138,7 +148,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
       case 'completed': return 'accent';
       case 'failed': return 'destructive';
       case 'timeout': return 'destructive';
-      case 'running': return 'brand';
+      case 'running': return 'default';
       case 'pending': return 'secondary';
       default: return 'outline';
     }
@@ -242,7 +252,14 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
           {/* Processed Locations */}
           {progress.data?.processedLocations && progress.data.processedLocations.length > 0 ? (
             <div className="space-y-2">
-              <ItemTitle className="text-sm text-muted-foreground">Processed Venues</ItemTitle>
+              <div className="flex items-center justify-between">
+                <ItemTitle className="text-sm text-muted-foreground">Processed Venues</ItemTitle>
+                {progress.data?.venueNames && Object.keys(progress.data.venueNames).length > 0 && (
+                  <Badge variant="secondary" size="sm" className="text-xs">
+                    Enhanced Names
+                  </Badge>
+                )}
+              </div>
               <div className="max-h-96 overflow-y-auto border rounded-lg p-2 bg-muted/10">
                 <div className="grid grid-cols-1 gap-2">
                   {progress.data.processedLocations.slice(0, 10).map((location, index) => (
@@ -251,7 +268,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
                       variant="outline" 
                       className="justify-between"
                     >
-                      <span>{location.name}</span>
+                      <span>{getVenueName(location)}</span>
                       <Badge 
                         variant={location.status === 'success' ? 'accentReverse' : 'secondary'} 
                         size="sm"
