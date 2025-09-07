@@ -50,7 +50,7 @@ export const useProgressTracking = (operationId: string | null, venueCount?: num
     setIsLoading(true);
     setError(null);
 
-    const pollProgress = async (_isFirstPoll = false) => {
+    const pollProgress = async () => {
       try {
         const response = await fetch(`${API_CONFIG.baseUrl}/api/progress/${operationId}`, {
           method: 'GET',
@@ -102,17 +102,17 @@ export const useProgressTracking = (operationId: string | null, venueCount?: num
         const pollDelay = isRunning ? 500 : 2000; // 500ms when running, 2s otherwise
         
         // Continue polling with adaptive delay
-        setTimeout(() => pollProgress(false), pollDelay);
+        setTimeout(() => pollProgress(), pollDelay);
       } catch (err) {
         console.error('Progress polling error:', err);
         setError(err instanceof Error ? err.message : 'Network error');
         // Retry after 2 seconds on error (reduced from 5s)
-        setTimeout(() => pollProgress(false), 2000);
+        setTimeout(() => pollProgress(), 2000);
       }
     };
 
     // Start with immediate first poll
-    pollProgress(true);
+    pollProgress();
   }, [operationId, venueCount]);
 
   useEffect(() => {
