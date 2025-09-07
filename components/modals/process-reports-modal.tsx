@@ -6,7 +6,7 @@ import { API_CONFIG } from '@/lib/api/config';
 import { useOperation } from '@/lib/contexts/operation-context';
 
 import { BucketFilesSummary } from '../features/bucket-files-summary';
-import { FileUploader } from '../features/file-uploader';
+import { FileUploadStep } from '../features/file-upload-step';
 import { ProgressTracker } from '../feedback/progress-tracker';
 import { useToast } from '../feedback/toast';
 import { Badge } from '../ui/badge';
@@ -20,6 +20,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '../ui/sheet';
+import { UploadPrompt } from '../ui/upload-prompt';
 
 interface ProcessReportsModalProps {
   open: boolean;
@@ -238,62 +239,25 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
                   onRefresh={() => {}}
                 />
                 
-                <Card className="p-6 space-y-4">
-                  <div className="text-center space-y-3">
-                    <Badge variant="outline" className="w-fit">
-                      📤 Or Upload New File
-                    </Badge>
-                    <p className="text-sm text-muted-foreground">
-                      Don&apos;t see the file you want to process? Upload a new one.
-                    </p>
-                    <Button
-                      onClick={handleUploadNewFile}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      Upload New File
-                    </Button>
-                  </div>
-                </Card>
+                <UploadPrompt onUploadClick={handleUploadNewFile} />
               </>
             )}
 
             {/* Step 2: File Upload */}
             {currentStep === 'upload' && (
-              <>
-                <Card className="p-6 space-y-4">
-                  <div className="space-y-3">
-                    <Badge variant="outline" className="w-fit">
-                      📁 Upload Booking File
-                    </Badge>
-                    <p className="text-sm text-muted-foreground">
-                      Upload your Excel or CSV booking file to process reports. The file will be validated and stored securely.
-                    </p>
-                  </div>
-                  <FileUploader
-                    onUploadSuccess={(fileName) => {
-                      handleUploadSuccess(fileName);
-                      setCurrentStep('confirm');
-                    }}
-                    onUploadError={handleUploadError}
-                    maxFileSize={50}
-                    allowedTypes={['.xlsx', '.xls', '.csv']}
-                  />
-                  {uploadError && (
-                    <Badge variant="destructive" className="w-full justify-center py-2">
-                      {uploadError}
-                    </Badge>
-                  )}
-                </Card>
-
-                <Button
-                  onClick={handleBackToFiles}
-                  variant="outline"
-                  className="w-full"
-                >
-                  ← Back to Files
-                </Button>
-              </>
+              <FileUploadStep
+                onUploadSuccess={(fileName) => {
+                  handleUploadSuccess(fileName);
+                  setCurrentStep('confirm');
+                }}
+                onUploadError={handleUploadError}
+                onBack={handleBackToFiles}
+                uploadError={uploadError}
+                maxFileSize={50}
+                allowedTypes={['.xlsx', '.xls', '.csv']}
+                title="📁 Upload Booking Files to DB"
+                description="Upload your .xls booking file or files to process booking reports to db. The file will be validated and stored securely."
+              />
             )}
 
             {/* Step 3: Confirmation */}

@@ -70,14 +70,6 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
     onRefresh?.();
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   const getTimeAgo = (dateString: string | undefined) => {
     if (!dateString) return { value: 0, unit: 'unknown' };
     
@@ -101,23 +93,6 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
     } else {
       return { value: diffDays, unit: 'days' };
     }
-  };
-
-  const getTimeAgoColor = (timeAgo: { value: number; unit: string }) => {
-    if (timeAgo.unit === 'unknown') return 'text-gray-500';
-    if (timeAgo.unit === 'minutes' || (timeAgo.unit === 'hours' && timeAgo.value < 2)) return 'text-green-600';
-    if (timeAgo.unit === 'hours' && timeAgo.value < 24) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const getTimeAgoText = (timeAgo: { value: number; unit: string }) => {
-    if (timeAgo.unit === 'unknown') return 'Unknown';
-    if (timeAgo.value === 0) return 'Just now';
-    if (timeAgo.value === 1) {
-      return timeAgo.unit === 'minutes' ? '1 minute ago' : 
-             timeAgo.unit === 'hours' ? '1 hour ago' : '1 day ago';
-    }
-    return `${timeAgo.value} ${timeAgo.unit} ago`;
   };
 
   if (isLoading) {
@@ -199,8 +174,10 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
               <p className="text-sm text-muted-foreground">
                 {files.length > 0 ? (() => {
                   const timeAgo = getTimeAgo(files[0].uploadDate || files[0].lastModified);
-                  return timeAgo.unit === 'minutes' ? 'Minutes' : 
-                         timeAgo.unit === 'hours' ? 'Hours' : 'Days';
+                  if (timeAgo.unit === 'minutes') return 'Minutes';
+                  if (timeAgo.unit === 'hours') return 'Hours ago';
+                  if (timeAgo.unit === 'days') return 'Days ago';
+                  return '';
                 })() : 'Since Latest'}
               </p>
             </div>
@@ -214,16 +191,8 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
                 className="w-full"
                 variant="default"
               >
-                Process Latest File
+                Process Bookings to DB
               </Button>
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground">
-                  Latest: {files[0].fileName} ({formatFileSize(files[0].size)})
-                </p>
-                <p className={`text-xs ${getTimeAgoColor(getTimeAgo(files[0].uploadDate || files[0].lastModified))}`}>
-                  {getTimeAgoText(getTimeAgo(files[0].uploadDate || files[0].lastModified))}
-                </p>
-              </div>
             </div>
           )}
         </div>
