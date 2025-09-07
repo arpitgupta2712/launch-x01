@@ -10,7 +10,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 
 interface FileUploaderProps {
-  onUploadSuccess?: (fileName: string) => void;
+  onUploadSuccess?: (fileName: string | string[]) => void;
   onUploadError?: (error: string) => void;
   onUploadProgress?: (progress: number) => void;
   onBack?: () => void;
@@ -22,6 +22,7 @@ interface FileUploaderProps {
   showCard?: boolean;
   showBackButton?: boolean;
   className?: string;
+  multiple?: boolean; // Allow multiple file selection
 }
 
 interface UploadResponse {
@@ -45,9 +46,10 @@ export function FileUploader({
   uploadError,
   showCard = false,
   showBackButton = false,
-  className = ""
+  className = "",
+  multiple = true
 }: FileUploaderProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
@@ -73,24 +75,38 @@ export function FileUploader({
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
-    const validationError = validateFile(file);
-    if (validationError) {
-      setErrorMessage(validationError);
+    // Validate all files
+    const validationErrors: string[] = [];
+    const validFiles: File[] = [];
+
+    files.forEach(file => {
+      const validationError = validateFile(file);
+      if (validationError) {
+        validationErrors.push(`${file.name}: ${validationError}`);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (validationErrors.length > 0) {
+      setErrorMessage(validationErrors.join('; '));
       setUploadStatus('error');
-      onUploadError?.(validationError);
+      onUploadError?.(validationErrors.join('; '));
       return;
     }
 
-    setSelectedFile(file);
-    setErrorMessage('');
-    setUploadStatus('idle');
+    if (validFiles.length > 0) {
+      setSelectedFiles(validFiles);
+      setErrorMessage('');
+      setUploadStatus('idle');
+    }
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (selectedFiles.length === 0) return;
 
     setIsUploading(true);
     setUploadStatus('uploading');
@@ -98,53 +114,78 @@ export function FileUploader({
     setErrorMessage('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
+      const uploadPromises = selectedFiles.map((file, index) => {
+        return new Promise<{ success: boolean; fileName: string; error?: string }>((resolve) => {
+          const formData = new FormData();
+          formData.append('file', file);
 
-      const xhr = new XMLHttpRequest();
+          const xhr = new XMLHttpRequest();
 
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const progress = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress(progress);
-          onUploadProgress?.(progress);
-        }
+          // Track upload progress for individual files
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+              const fileProgress = Math.round((event.loaded / event.total) * 100);
+              const totalProgress = Math.round(((index * 100) + fileProgress) / selectedFiles.length);
+              setUploadProgress(totalProgress);
+              onUploadProgress?.(totalProgress);
+            }
+          });
+
+          // Handle response
+          xhr.addEventListener('load', () => {
+            if (xhr.status === 200) {
+              const response: UploadResponse = JSON.parse(xhr.responseText);
+              if (response.success) {
+                resolve({ success: true, fileName: response.fileName || file.name });
+              } else {
+                resolve({ success: false, fileName: file.name, error: response.error || 'Upload failed' });
+              }
+            } else {
+              const response: UploadResponse = JSON.parse(xhr.responseText);
+              resolve({ success: false, fileName: file.name, error: response.error || `Upload failed with status ${xhr.status}` });
+            }
+          });
+
+          // Handle errors
+          xhr.addEventListener('error', () => {
+            resolve({ success: false, fileName: file.name, error: 'Network error during upload' });
+          });
+
+          // Start upload
+          xhr.open('POST', `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.uploadBookingFile}`);
+          xhr.send(formData);
+        });
       });
 
-      // Handle response
-      xhr.addEventListener('load', () => {
-        setIsUploading(false);
-        
-        if (xhr.status === 200) {
-          const response: UploadResponse = JSON.parse(xhr.responseText);
-          if (response.success) {
-            setUploadStatus('success');
-            onUploadSuccess?.(response.fileName || selectedFile.name);
-          } else {
-            setUploadStatus('error');
-            setErrorMessage(response.error || 'Upload failed');
-            onUploadError?.(response.error || 'Upload failed');
-          }
-        } else {
-          const response: UploadResponse = JSON.parse(xhr.responseText);
-          setUploadStatus('error');
-          setErrorMessage(response.error || `Upload failed with status ${xhr.status}`);
-          onUploadError?.(response.error || `Upload failed with status ${xhr.status}`);
-        }
-      });
+      // Wait for all uploads to complete
+      const results = await Promise.all(uploadPromises);
+      
+      setIsUploading(false);
+      
+      const successfulUploads = results.filter(r => r.success);
+      const failedUploads = results.filter(r => !r.success);
 
-      // Handle errors
-      xhr.addEventListener('error', () => {
-        setIsUploading(false);
+      if (failedUploads.length === 0) {
+        // All uploads successful
+        setUploadStatus('success');
+        const fileNames = successfulUploads.map(r => r.fileName);
+        onUploadSuccess?.(fileNames.length === 1 ? fileNames[0] : fileNames);
+      } else if (successfulUploads.length === 0) {
+        // All uploads failed
         setUploadStatus('error');
-        setErrorMessage('Network error during upload');
-        onUploadError?.('Network error during upload');
-      });
-
-      // Start upload
-      xhr.open('POST', `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.uploadBookingFile}`);
-      xhr.send(formData);
+        const errorMsg = failedUploads.map(r => `${r.fileName}: ${r.error}`).join('; ');
+        setErrorMessage(errorMsg);
+        onUploadError?.(errorMsg);
+      } else {
+        // Some uploads successful, some failed
+        setUploadStatus('error');
+        const errorMsg = `Partial success: ${successfulUploads.length}/${selectedFiles.length} files uploaded. Failed: ${failedUploads.map(r => r.fileName).join(', ')}`;
+        setErrorMessage(errorMsg);
+        onUploadError?.(errorMsg);
+        // Still call success callback for the successful files
+        const fileNames = successfulUploads.map(r => r.fileName);
+        onUploadSuccess?.(fileNames.length === 1 ? fileNames[0] : fileNames);
+      }
 
     } catch (error) {
       setIsUploading(false);
@@ -155,8 +196,14 @@ export function FileUploader({
     }
   };
 
-  const handleRemoveFile = () => {
-    setSelectedFile(null);
+  const handleRemoveFile = (index?: number) => {
+    if (index !== undefined) {
+      // Remove specific file
+      setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    } else {
+      // Remove all files
+      setSelectedFiles([]);
+    }
     setUploadStatus('idle');
     setUploadProgress(0);
     setErrorMessage('');
@@ -167,16 +214,31 @@ export function FileUploader({
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file) {
+    const files = Array.from(event.dataTransfer.files);
+    if (files.length === 0) return;
+
+    // Validate all files
+    const validationErrors: string[] = [];
+    const validFiles: File[] = [];
+
+    files.forEach(file => {
       const validationError = validateFile(file);
       if (validationError) {
-        setErrorMessage(validationError);
-        setUploadStatus('error');
-        onUploadError?.(validationError);
-        return;
+        validationErrors.push(`${file.name}: ${validationError}`);
+      } else {
+        validFiles.push(file);
       }
-      setSelectedFile(file);
+    });
+
+    if (validationErrors.length > 0) {
+      setErrorMessage(validationErrors.join('; '));
+      setUploadStatus('error');
+      onUploadError?.(validationErrors.join('; '));
+      return;
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles(validFiles);
       setErrorMessage('');
       setUploadStatus('idle');
     }
@@ -225,17 +287,18 @@ export function FileUploader({
           type="file"
           accept={allowedTypes.join(',')}
           onChange={handleFileSelect}
+          multiple={multiple}
           className="hidden"
         />
         
-        {!selectedFile ? (
+        {selectedFiles.length === 0 ? (
           <div className="space-y-3">
             <div className="flex justify-center">
               {getStatusIcon()}
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                Drop your booking file here, or{' '}
+                Drop your booking {multiple ? 'files' : 'file'} here, or{' '}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -246,24 +309,50 @@ export function FileUploader({
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Supports {allowedTypes.join(', ')} files up to {maxFileSize}MB
+                {multiple && ' (multiple files supported)'}
               </p>
             </div>
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center justify-center space-x-2">
-              <File className="w-5 h-5 text-muted-foreground" />
-              <span className="text-sm font-medium">{selectedFile.name}</span>
-              <button
-                type="button"
-                onClick={handleRemoveFile}
-                className="text-muted-foreground hover:text-destructive"
-              >
-                <X className="w-4 h-4" />
-              </button>
+            <div className="text-center">
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <File className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm font-medium">
+                  {selectedFiles.length} file{selectedFiles.length > 1 ? 's' : ''} selected
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveFile()}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+            
+            {/* File List */}
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="flex items-center justify-between p-2 bg-muted/20 rounded text-xs">
+                  <div className="flex items-center space-x-2 flex-1 min-w-0">
+                    <File className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                    <span className="truncate">{file.name}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <span className="text-muted-foreground">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -295,18 +384,18 @@ export function FileUploader({
       {/* Success Message */}
       {uploadStatus === 'success' && (
         <Badge variant="default" className="w-full justify-center py-2">
-          File uploaded successfully!
+          {selectedFiles.length > 1 ? `${selectedFiles.length} files uploaded successfully!` : 'File uploaded successfully!'}
         </Badge>
       )}
 
       {/* Upload Button */}
-      {selectedFile && uploadStatus !== 'uploading' && uploadStatus !== 'success' && (
+      {selectedFiles.length > 0 && uploadStatus !== 'uploading' && uploadStatus !== 'success' && (
         <Button
           onClick={handleUpload}
           disabled={isUploading}
           className="w-full"
         >
-          {isUploading ? 'Uploading...' : 'Upload File'}
+          {isUploading ? 'Uploading...' : `Upload ${selectedFiles.length} File${selectedFiles.length > 1 ? 's' : ''}`}
         </Button>
       )}
     </div>

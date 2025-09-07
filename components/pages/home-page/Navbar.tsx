@@ -14,7 +14,7 @@ import {
 } from "../../layout/navbar";
 import Navigation from "../../layout/navigation";
 import { ClayGroundsComposite } from "../../logos/claygrounds";
-import { SignInModal } from "../../modals/signin-modal";
+import { ReportGenerationModal } from "../../modals/report-generation-modal";
 import { Button, type ButtonProps } from "../../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
 
@@ -84,7 +84,7 @@ export default function Navbar({
   customNavigation, // 🎨 BRAND CUSTOMIZATION: Provide custom navigation component
   className, // 🎨 BRAND CUSTOMIZATION: Add custom styling classes
 }: NavbarProps) {
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [isReportGenerationModalOpen, setIsReportGenerationModalOpen] = useState(false);
   return (
     // 🎨 MAIN HEADER CONTAINER: Sticky header with backdrop blur effect
     <header className={cn("sticky top-0 z-50 w-full -mb-4 px-4 pb-4", className)} style={{ position: 'sticky', top: 0 }}>
@@ -118,7 +118,7 @@ export default function Navbar({
                   variant={action.variant || "default"}
                   onClick={() => {
                     if (action.text === "Sign in") {
-                      setIsSignInModalOpen(true);
+                      setIsReportGenerationModalOpen(true);
                     } else {
                       window.open(action.href, '_blank');
                     }
@@ -177,10 +177,10 @@ export default function Navbar({
         </NavbarComponent>
       </div>
       
-      {/* 🎨 SIGN IN MODAL: Modal for user authentication */}
-      <SignInModal 
-        open={isSignInModalOpen} 
-        onOpenChange={setIsSignInModalOpen} 
+      {/* 🎨 REPORT GENERATION MODAL: Unified modal for authentication and report processing */}
+      <ReportGenerationModal 
+        open={isReportGenerationModalOpen} 
+        onOpenChange={setIsReportGenerationModalOpen} 
       />
     </header>
   );

@@ -5,8 +5,7 @@ import { ReactNode, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { ProcessReportsModal } from "../../modals/process-reports-modal";
-import { SignInModal } from "../../modals/signin-modal";
+import { ReportGenerationModal } from "../../modals/report-generation-modal";
 import { ApiStatusBadge } from "../../ui/api-status-badge";
 import { Button, type ButtonProps } from "../../ui/button";
 import Glow from "../../ui/glow";
@@ -151,8 +150,7 @@ export default function Hero({
   // 🎨 BRAND CUSTOMIZATION: Additional styling classes
   className,
 }: HeroProps) {
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const [isProcessReportsModalOpen, setIsProcessReportsModalOpen] = useState(false);
+  const [isReportGenerationModalOpen, setIsReportGenerationModalOpen] = useState(false);
   
   return (
     <Section
@@ -185,10 +183,8 @@ export default function Hero({
                   variant={button.variant || "default"}
                   size="lg"
                   onClick={() => {
-                    if (button.isSignInButton) {
-                      setIsSignInModalOpen(true);
-                    } else if (button.isProcessReportsButton) {
-                      setIsProcessReportsModalOpen(true);
+                    if (button.isSignInButton || button.isProcessReportsButton) {
+                      setIsReportGenerationModalOpen(true);
                     } else if (button.href) {
                       window.open(button.href, '_blank');
                     }
@@ -243,16 +239,10 @@ export default function Hero({
         </div>
       </div>
       
-      {/* 🎨 SIGN IN MODAL: Modal for user authentication */}
-      <SignInModal 
-        open={isSignInModalOpen} 
-        onOpenChange={setIsSignInModalOpen} 
-      />
-      
-      {/* 🎨 PROCESS REPORTS MODAL: Modal for GitHub button report processing */}
-      <ProcessReportsModal 
-        open={isProcessReportsModalOpen} 
-        onOpenChange={setIsProcessReportsModalOpen} 
+      {/* 🎨 REPORT GENERATION MODAL: Unified modal for authentication and report processing */}
+      <ReportGenerationModal 
+        open={isReportGenerationModalOpen} 
+        onOpenChange={setIsReportGenerationModalOpen} 
       />
     </Section>
   );

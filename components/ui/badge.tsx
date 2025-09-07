@@ -16,6 +16,10 @@ const badgeVariants = cva(
           "border-transparent bg-secondary text-secondary-foreground dark:shadow-sm dark:border-transparent",
         destructive:
           "border-transparent bg-destructive/30 text-destructive-foreground dark:shadow-sm dark:border-transparent",
+        accent:
+          "border-transparent bg-accent text-accent-foreground dark:shadow-sm dark:border-transparent",
+        accentReverse:
+          "border-accent/20 bg-accent/10 text-accent dark:shadow-sm dark:border-accent/10",
         outline: "text-foreground",
       },
       size: {
