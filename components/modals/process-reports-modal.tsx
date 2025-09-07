@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect,useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 
 import { API_CONFIG } from '@/lib/api/config';
 import { useOperation } from '@/lib/contexts/operation-context';
 
-import { BucketFilesSummary } from '../features/bucket-files-summary';
-import { FileUploadStep } from '../features/file-upload-step';
+import { BucketFilesSummary } from '../features/bucket-summary';
+import { FileUploader } from '../features/file-uploader';
 import { ProgressTracker } from '../feedback/progress-tracker';
 import { useToast } from '../feedback/toast';
 import { Badge } from '../ui/badge';
@@ -21,6 +22,7 @@ import {
   SheetTitle,
 } from '../ui/sheet';
 import { UploadPrompt } from '../ui/upload-prompt';
+import { Divider } from '../ui/divider';
 
 interface ProcessReportsModalProps {
   open: boolean;
@@ -195,7 +197,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
 
   return (
     <Sheet open={open} onOpenChange={handleClose}>
-      <SheetContent side="right" className="w-full sm:max-w-[500px] space-y-6">
+      <SheetContent side="right" className="w-full sm:max-w-[600px] space-y-6">
         <SheetHeader>
           <SheetTitle>Process Reports</SheetTitle>
           <SheetDescription>
@@ -209,6 +211,8 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
             }
           </SheetDescription>
         </SheetHeader>
+
+        <Divider variant="glow" size="lg" />
         
         {currentStep === 'processing' && currentOperation ? (
           <div className="space-y-4">
@@ -245,7 +249,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
 
             {/* Step 2: File Upload */}
             {currentStep === 'upload' && (
-              <FileUploadStep
+              <FileUploader
                 onUploadSuccess={(fileName) => {
                   handleUploadSuccess(fileName);
                   setCurrentStep('confirm');
@@ -255,32 +259,22 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
                 uploadError={uploadError}
                 maxFileSize={50}
                 allowedTypes={['.xlsx', '.xls', '.csv']}
-                title="📁 Upload Booking Files to DB"
+                title="Upload Booking Files to DB"
                 description="Upload your .xls booking file or files to process booking reports to db. The file will be validated and stored securely."
+                showCard={true}
+                showBackButton={true}
               />
             )}
 
             {/* Step 3: Confirmation */}
             {currentStep === 'confirm' && (
-              <>
-                <Card className="p-6 space-y-4">
-                  <div className="space-y-3">
-                    <Badge variant="outline" className="w-fit">
-                      ✅ Ready to Process
-                    </Badge>
-                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-green-800 font-medium">
-                        File Selected: {selectedExistingFile || uploadedFileName}
-                      </p>
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="w-5 h-5 text-accent" />
+                    <span className="text-sm font-medium text-accent-foreground">Important Notice</span>
                   </div>
-                </Card>
 
                 <Card className="p-6 space-y-4">
-                  <div className="space-y-3">
-                    <Badge variant="outline" className="w-fit">
-                      ⚠️ Important Notice
-                    </Badge>
                     <div className="text-sm text-muted-foreground space-y-2">
                       <p>This operation will:</p>
                       <ul className="list-disc list-inside space-y-1 ml-4">
@@ -293,7 +287,6 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
                         Are you sure you want to proceed?
                       </p>
                     </div>
-                  </div>
 
                   {/* Error Display */}
                   {error && (
@@ -320,7 +313,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
                     {isLoading ? 'Starting Process...' : 'Start Processing'}
                   </Button>
                 </div>
-              </>
+              </div>
             )}
 
             {/* Footer for files and upload steps */}

@@ -174,10 +174,10 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
               <p className="text-sm text-muted-foreground">
                 {files.length > 0 ? (() => {
                   const timeAgo = getTimeAgo(files[0].uploadDate || files[0].lastModified);
-                  if (timeAgo.unit === 'minutes') return 'Minutes';
+                  if (timeAgo.unit === 'minutes') return 'Minutes ago';
                   if (timeAgo.unit === 'hours') return 'Hours ago';
                   if (timeAgo.unit === 'days') return 'Days ago';
-                  return '';
+                  return 'Unknown';
                 })() : 'Since Latest'}
               </p>
             </div>

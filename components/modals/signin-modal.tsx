@@ -17,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '../ui/sheet';
+import { Divider } from '../ui/divider';
 
 interface SignInModalProps {
   open: boolean;
@@ -139,7 +140,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
 
   return (
     <Sheet open={open} onOpenChange={handleClose}>
-      <SheetContent side="right" className="w-full sm:max-w-[500px] space-y-6">
+      <SheetContent side="right" className="w-full sm:max-w-[600px] space-y-6">
         <SheetHeader>
           <SheetTitle>Sign In to Generate Reports</SheetTitle>
           <SheetDescription>
@@ -149,6 +150,8 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
             }
           </SheetDescription>
         </SheetHeader>
+        
+        <Divider variant="glow" size="lg" />
         
         {showProgress ? (
           <div className="space-y-4">
@@ -186,7 +189,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
                 required
                 disabled={isLoading}
                 variant="outline"
-                inputSize="lg"
+                inputSize="xl"
               />
             </div>
 
@@ -204,7 +207,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
                 required
                 disabled={isLoading}
                 variant="outline"
-                inputSize="lg"
+                inputSize="xl"
               />
             </div>
 
@@ -222,7 +225,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
                   required
                   disabled={isLoading}
                   variant="outline"
-                  inputSize="lg"
+                  inputSize="xl"
                 />
               </div>
               <div className="space-y-3">
@@ -237,7 +240,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
                   required
                   disabled={isLoading}
                   variant="outline"
-                  inputSize="lg"
+                  inputSize="xl"
                 />
               </div>
             </div>
@@ -270,6 +273,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
             </SheetFooter>
           </form>
         )}
+      
       </SheetContent>
     </Sheet>
   );

@@ -23,7 +23,7 @@ export function UploadPrompt({ onUploadClick, className }: UploadPromptProps) {
         </p>
         <Button
           onClick={onUploadClick}
-          variant="outline"
+          variant="default"
           className="w-full"
         >
           Upload New File

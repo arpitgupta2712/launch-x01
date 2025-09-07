@@ -7,13 +7,20 @@ import { API_CONFIG } from '@/lib/api/config';
 
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 
 interface FileUploaderProps {
   onUploadSuccess?: (fileName: string) => void;
   onUploadError?: (error: string) => void;
   onUploadProgress?: (progress: number) => void;
+  onBack?: () => void;
   maxFileSize?: number; // in MB
   allowedTypes?: string[];
+  title?: string;
+  description?: string;
+  uploadError?: string | null;
+  showCard?: boolean;
+  showBackButton?: boolean;
   className?: string;
 }
 
@@ -30,8 +37,14 @@ export function FileUploader({
   onUploadSuccess, 
   onUploadError, 
   onUploadProgress,
+  onBack,
   maxFileSize = 50,
   allowedTypes = ['.xlsx', '.xls', '.csv'],
+  title = "Upload Booking Files to DB",
+  description = "Upload your .xls booking file or files to process booking reports to db. The file will be validated and stored securely.",
+  uploadError,
+  showCard = false,
+  showBackButton = false,
   className = ""
 }: FileUploaderProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -199,7 +212,7 @@ export function FileUploader({
     }
   };
 
-  return (
+  const uploaderContent = (
     <div className={`space-y-4 ${className}`}>
       {/* File Drop Zone */}
       <div
@@ -298,4 +311,39 @@ export function FileUploader({
       )}
     </div>
   );
+
+  if (showCard) {
+    return (
+      <>
+        <Card className={`p-6 space-y-4 ${className || ''}`}>
+          <div className="space-y-3">
+            <Badge variant="outline" className="w-fit">
+              {title}
+            </Badge>
+            <p className="text-sm text-muted-foreground">
+              {description}
+            </p>
+          </div>
+          {uploaderContent}
+          {uploadError && (
+            <Badge variant="destructive" className="w-full justify-center py-2">
+              {uploadError}
+            </Badge>
+          )}
+        </Card>
+
+        {showBackButton && onBack && (
+          <Button
+            onClick={onBack}
+            variant="outline"
+            className="w-full"
+          >
+            ← Back to Files
+          </Button>
+        )}
+      </>
+    );
+  }
+
+  return uploaderContent;
 }

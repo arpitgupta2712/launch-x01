@@ -1,4 +1,3 @@
 // Feature Components
-export { BucketFilesSummary } from './bucket-files-summary';
-export { FileUploadStep } from './file-upload-step';
+export { BucketFilesSummary } from './bucket-summary';
 export { FileUploader } from './file-uploader';
