@@ -4,8 +4,7 @@ import { ReactNode, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import Github from "../logos/github";
-import React from "../logos/react";
+import { Settings, User } from "lucide-react";
 import { ApiStatusBadge } from "../ui/api-status-badge";
 import { Button, type ButtonProps } from "../ui/button";
 import Glow from "../ui/glow";
@@ -13,6 +12,7 @@ import { Mockup, MockupFrame } from "../ui/mockup";
 import Screenshot from "../ui/screenshot";
 import { Section } from "../ui/section";
 import { SignInModal } from "../ui/signin-modal";
+import { ProcessReportsModal } from "../ui/process-reports-modal";
 
 /**
  * 🎨 HERO BUTTON CONFIGURATION
@@ -38,12 +38,13 @@ import { SignInModal } from "../ui/signin-modal";
  * ```
  */
 interface HeroButtonProps {
-  href: string;
+  href?: string;
   text: string;
   variant?: ButtonProps["variant"];
   icon?: ReactNode;
   iconRight?: ReactNode;
   isSignInButton?: boolean;
+  isProcessReportsButton?: boolean;
 }
 
 /**
@@ -135,23 +136,23 @@ export default function Hero({
   // 🎨 BRAND CUSTOMIZATION: Action buttons - change text, links, and variants
   buttons = [
     {
-      href: "https://www.claygrounds.com",
       text: "Sign in",
       variant: "default",
-      icon: <React className="mr-2 size-4" />,
+      icon: <User className="mr-2 size-4" />,
       isSignInButton: true,
     },
     {
-      href: "https://github.com/arpitgupta2712",
-      text: "Github",
+      text: "Process",
       variant: "glow",
-      icon: <Github className="mr-2 size-4" />,
+      icon: <Settings className="mr-2 size-4" />,
+      isProcessReportsButton: true,
     },
   ],
   // 🎨 BRAND CUSTOMIZATION: Additional styling classes
   className,
 }: HeroProps) {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [isProcessReportsModalOpen, setIsProcessReportsModalOpen] = useState(false);
   
   return (
     <Section
@@ -186,24 +187,32 @@ export default function Hero({
                   onClick={() => {
                     if (button.isSignInButton) {
                       setIsSignInModalOpen(true);
-                    } else {
+                    } else if (button.isProcessReportsButton) {
+                      setIsProcessReportsModalOpen(true);
+                    } else if (button.href) {
                       window.open(button.href, '_blank');
                     }
                   }}
-                  asChild={!button.isSignInButton}
+                  asChild={!button.isSignInButton && !button.isProcessReportsButton && !!button.href}
                 >
-                  {button.isSignInButton ? (
+                  {button.isSignInButton || button.isProcessReportsButton ? (
                     <>
                       {button.icon}
                       {button.text}
                       {button.iconRight}
                     </>
-                  ) : (
+                  ) : button.href ? (
                     <a href={button.href}>
                       {button.icon}
                       {button.text}
                       {button.iconRight}
                     </a>
+                  ) : (
+                    <>
+                      {button.icon}
+                      {button.text}
+                      {button.iconRight}
+                    </>
                   )}
                 </Button>
               ))}
@@ -238,6 +247,12 @@ export default function Hero({
       <SignInModal 
         open={isSignInModalOpen} 
         onOpenChange={setIsSignInModalOpen} 
+      />
+      
+      {/* 🎨 PROCESS REPORTS MODAL: Modal for GitHub button report processing */}
+      <ProcessReportsModal 
+        open={isProcessReportsModalOpen} 
+        onOpenChange={setIsProcessReportsModalOpen} 
       />
     </Section>
   );

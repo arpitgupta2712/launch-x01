@@ -155,7 +155,9 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
       
       {/* Progress Header */}
       <div className="flex items-center justify-between relative z-10">
-        <ItemTitle className="text-lg">Email Report Generation</ItemTitle>
+        <ItemTitle className="text-lg">
+          {progress.data?.operation === 'process' ? 'Report Processing' : 'Email Report Generation'}
+        </ItemTitle>
         <Badge variant={getStatusColor(progress.status)} className="animate-pulse">
           {progress.status.toUpperCase()}
         </Badge>
@@ -230,7 +232,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
       {progress.status === 'completed' && (
         <div className="relative z-10 space-y-3">
           <Badge variant="default" className="w-full justify-center py-2">
-            Report Generated Successfully
+            {progress.data?.operation === 'process' ? 'Reports Processed Successfully' : 'Report Generated Successfully'}
           </Badge>
           
           {/* Processed Locations */}
