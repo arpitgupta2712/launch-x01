@@ -3,7 +3,7 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 
 import { ThemeProvider } from "@/components/contexts/theme-provider";
-import { ToastProvider } from "@/components/ui/toast";
+import { ToastProvider } from "@/components/feedback/toast";
 import { AppDataProvider } from "@/lib/contexts/app-data-context";
 import { AuthProvider } from "@/lib/contexts/auth-context";
 import { OperationProvider } from "@/lib/contexts/operation-context";

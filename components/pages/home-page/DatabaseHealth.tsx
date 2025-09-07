@@ -13,10 +13,10 @@ import { ReactNode } from "react";
 
 import { useOptimizedHealthData } from "@/lib/hooks/use-optimized-data";
 
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Section } from "../ui/section";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import { Section } from "../../ui/section";
 
 interface ItemProps {
   title: string;

@@ -1,12 +1,12 @@
-import AdminStats from "../components/sections/AdminStats";
-import CTA from "../components/sections/CTA";
-import DatabaseHealth from "../components/sections/DatabaseHealth";
-import FAQ from "../components/sections/FAQ";
-import Footer from "../components/sections/Footer";
-import Hero from "../components/sections/Hero";
-import Navbar from "../components/sections/Navbar";
-import Pricing from "../components/sections/Pricing";
-import SystemHealth from "../components/sections/SystemHealth";
+import AdminStats from "../components/pages/home-page/AdminStats";
+import CTA from "../components/pages/home-page/CTA";
+import DatabaseHealth from "../components/pages/home-page/DatabaseHealth";
+import FAQ from "../components/pages/home-page/FAQ";
+import Footer from "../components/pages/home-page/Footer";
+import Hero from "../components/pages/home-page/Hero";
+import Navbar from "../components/pages/home-page/Navbar";
+import Pricing from "../components/pages/home-page/Pricing";
+import SystemHealth from "../components/pages/home-page/SystemHealth";
 import { Divider } from "../components/ui/divider";
 
 export default function Home() {

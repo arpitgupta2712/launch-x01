@@ -4,12 +4,12 @@ import React from 'react';
 
 import { useProgressTracking } from '@/lib/hooks/use-progress-tracking';
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
-import { Badge } from './badge';
-import { Beam } from './beam';
-import { Card, CardContent, CardDescription, CardHeader } from './card';
-import { Divider } from './divider';
-import { Item, ItemDescription, ItemIcon, ItemTitle } from './item';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Badge } from '../ui/badge';
+import { Beam } from '../ui/beam';
+import { Card, CardContent, CardDescription, CardHeader } from '../ui/card';
+import { Divider } from '../ui/divider';
+import { Item, ItemDescription, ItemIcon, ItemTitle } from '../ui/item';
 
 interface ProgressTrackerProps {
   operationId: string | null;

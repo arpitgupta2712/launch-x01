@@ -10,8 +10,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
-import { Section } from "../ui/section";
+} from "../../ui/accordion";
+import { Section } from "../../ui/section";
 
 interface FAQItemProps {
   question: string;

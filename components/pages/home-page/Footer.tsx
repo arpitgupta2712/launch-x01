@@ -6,14 +6,14 @@ import { siteConfig } from "@/config/site";
 import { useOptimizedCompanyData } from "@/lib/hooks/use-optimized-data";
 import { cn } from "@/lib/utils";
 
-import { ClayGroundsComposite } from "../logos/claygrounds";
+import { ModeToggle } from "../../forms/mode-toggle";
 import {
   Footer,
   FooterBottom,
   FooterColumn,
   FooterContent,
-} from "../ui/footer";
-import { ModeToggle } from "../ui/mode-toggle";
+} from "../../layout/footer";
+import { ClayGroundsComposite } from "../../logos/claygrounds";
 
 interface FooterLink {
   text: string;

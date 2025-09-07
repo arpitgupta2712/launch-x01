@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { Upload, File, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { AlertCircle,CheckCircle, File, Upload, X } from 'lucide-react';
+import React, { useRef,useState } from 'react';
 
 import { API_CONFIG } from '@/lib/api/config';
 
-import { Badge } from './badge';
-import { Button } from './button';
-import { Card } from './card';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 
 interface FileUploaderProps {
   onUploadSuccess?: (fileName: string) => void;

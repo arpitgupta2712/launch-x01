@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 
 import { API_CONFIG } from '@/lib/api/config';
 import { useOperation } from '@/lib/contexts/operation-context';
-import { useToast } from './toast';
 
-import { Badge } from './badge';
-import { Button } from './button';
-import { Card } from './card';
-import { BucketFilesSummary } from './bucket-files-summary';
-import { FileUploader } from './file-uploader';
-import { ProgressTracker } from './progress-tracker';
+import { BucketFilesSummary } from '../features/bucket-files-summary';
+import { FileUploader } from '../features/file-uploader';
+import { ProgressTracker } from '../feedback/progress-tracker';
+import { useToast } from '../feedback/toast';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import {
   Sheet,
   SheetContent,
@@ -19,7 +19,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from './sheet';
+} from '../ui/sheet';
 
 interface ProcessReportsModalProps {
   open: boolean;
@@ -32,11 +32,11 @@ interface ProcessReportsResponse {
   operationId?: string;
   venueCount?: number;
   estimatedDuration?: number;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalProps) {
-  const { currentOperation, setCurrentOperation, updateOperation, clearOperation, isOperationRunning } = useOperation();
+  const { currentOperation, setCurrentOperation, isOperationRunning } = useOperation();
   const { addToast } = useToast();
   
   const [isLoading, setIsLoading] = useState(false);
@@ -143,7 +143,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
           type: 'error',
         });
       }
-    } catch (err) {
+      } catch (_err) {
       const errorMessage = 'Network error. Please try again.';
       setError(errorMessage);
       addToast({
@@ -244,7 +244,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
                       📤 Or Upload New File
                     </Badge>
                     <p className="text-sm text-muted-foreground">
-                      Don't see the file you want to process? Upload a new one.
+                      Don&apos;t see the file you want to process? Upload a new one.
                     </p>
                     <Button
                       onClick={handleUploadNewFile}

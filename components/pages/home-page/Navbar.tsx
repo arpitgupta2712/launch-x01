@@ -6,17 +6,17 @@ import { ReactNode, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-import { ClayGroundsComposite } from "../logos/claygrounds";
-import { Button, type ButtonProps } from "../ui/button";
-// import { ModeToggle } from "../ui/mode-toggle"; // Disabled - keeping dark theme default
+// import { ModeToggle } from "../../forms/mode-toggle"; // Disabled - keeping dark theme default
 import {
   Navbar as NavbarComponent,
   NavbarLeft,
   NavbarRight,
-} from "../ui/navbar";
-import Navigation from "../ui/navigation";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { SignInModal } from "../ui/signin-modal";
+} from "../../layout/navbar";
+import Navigation from "../../layout/navigation";
+import { ClayGroundsComposite } from "../../logos/claygrounds";
+import { SignInModal } from "../../modals/signin-modal";
+import { Button, type ButtonProps } from "../../ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
 
 /**
  * Configuration for individual navigation links in the mobile menu

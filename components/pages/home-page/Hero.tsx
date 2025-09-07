@@ -1,18 +1,18 @@
 "use client";
 
+import { Settings, User } from "lucide-react";
 import { ReactNode, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { Settings, User } from "lucide-react";
-import { ApiStatusBadge } from "../ui/api-status-badge";
-import { Button, type ButtonProps } from "../ui/button";
-import Glow from "../ui/glow";
-import { Mockup, MockupFrame } from "../ui/mockup";
-import Screenshot from "../ui/screenshot";
-import { Section } from "../ui/section";
-import { SignInModal } from "../ui/signin-modal";
-import { ProcessReportsModal } from "../ui/process-reports-modal";
+import { ProcessReportsModal } from "../../modals/process-reports-modal";
+import { SignInModal } from "../../modals/signin-modal";
+import { ApiStatusBadge } from "../../ui/api-status-badge";
+import { Button, type ButtonProps } from "../../ui/button";
+import Glow from "../../ui/glow";
+import { Mockup, MockupFrame } from "../../ui/mockup";
+import Screenshot from "../../ui/screenshot";
+import { Section } from "../../ui/section";
 
 /**
  * 🎨 HERO BUTTON CONFIGURATION

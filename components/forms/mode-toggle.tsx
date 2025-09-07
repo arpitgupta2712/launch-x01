@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import * as React from "react";
 import { useEffect,useState } from "react";
 
-import { Button } from "./button";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,

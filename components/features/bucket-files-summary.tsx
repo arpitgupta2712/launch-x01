@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { FileText, Calendar, Hash, RefreshCw } from 'lucide-react';
+import { Calendar, FileText, Hash, RefreshCw } from 'lucide-react';
+import React, { useEffect,useState } from 'react';
 
 import { API_CONFIG } from '@/lib/api/config';
 
-import { Badge } from './badge';
-import { Button } from './button';
-import { Card } from './card';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 
 interface BucketFile {
   fileName: string;
@@ -54,7 +54,7 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
       } else {
         setError(data.error || 'Failed to fetch files');
       }
-    } catch (err) {
+      } catch (_err) {
       setError('Network error while fetching files');
     } finally {
       setIsLoading(false);

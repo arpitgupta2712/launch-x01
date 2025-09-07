@@ -15,7 +15,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "./navigation-menu";
+} from "../ui/navigation-menu";
 
 interface ComponentItem {
   title: string;

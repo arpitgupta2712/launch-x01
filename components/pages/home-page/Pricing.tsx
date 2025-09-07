@@ -2,8 +2,8 @@ import { Trophy, Users, Wallet } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-import { PricingColumn, PricingColumnProps } from "../ui/pricing-column";
-import { Section } from "../ui/section";
+import { PricingColumn, PricingColumnProps } from "../../ui/pricing-column";
+import { Section } from "../../ui/section";
 
 interface PricingProps {
   title?: string | false;

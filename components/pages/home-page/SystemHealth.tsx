@@ -15,10 +15,10 @@ import { ReactNode, useEffect, useState } from "react";
 import { useOptimizedVenuesData } from "@/lib/hooks/use-optimized-data";
 import { cn } from "@/lib/utils";
 
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { Section } from "../ui/section";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Card, CardContent } from "../../ui/card";
+import { Section } from "../../ui/section";
 
 /**
  * 🎨 HEALTH METRIC CONFIGURATION

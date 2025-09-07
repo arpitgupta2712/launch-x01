@@ -4,8 +4,8 @@ import { RefreshCw } from "lucide-react";
 
 import { useOptimizedStatsData } from "@/lib/hooks/use-optimized-data";
 
-import { Button } from "../ui/button";
-import { Section } from "../ui/section";
+import { Button } from "../../ui/button";
+import { Section } from "../../ui/section";
 
 interface StatItemProps {
   label?: string;

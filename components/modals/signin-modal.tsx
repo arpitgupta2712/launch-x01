@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 
 import { useAuth } from '@/lib/contexts/auth-context';
 
-import { Badge } from './badge';
-import { Button } from './button';
-import { Card } from './card';
-import { Input } from './input';
-import { ProgressTracker } from './progress-tracker';
+import { ProgressTracker } from '../feedback/progress-tracker';
+import { Input } from '../forms/input';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import {
   Sheet,
   SheetContent,
@@ -16,7 +16,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from './sheet';
+} from '../ui/sheet';
 
 interface SignInModalProps {
   open: boolean;
