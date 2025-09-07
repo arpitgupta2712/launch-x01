@@ -50,7 +50,7 @@ export const useProgressTracking = (operationId: string | null, venueCount?: num
     setIsLoading(true);
     setError(null);
 
-    const pollProgress = async () => {
+    const pollProgress = async (isFirstPoll = false) => {
       try {
         const response = await fetch(`${API_CONFIG.baseUrl}/api/progress/${operationId}`, {
           method: 'GET',
@@ -61,15 +61,27 @@ export const useProgressTracking = (operationId: string | null, venueCount?: num
         const data: ProgressResponse = await response.json();
 
         if (data.success) {
+          // Calculate progress based on processed locations if available
+          const processedCount = data.progress.data?.processedLocations?.length || 0;
+          const totalCount = venueCount || data.progress.total || 0;
+          
+          // Calculate progress percentage based on actual processed venues
+          let calculatedProgress = 0;
+          if (totalCount > 0) {
+            calculatedProgress = Math.min(100, Math.round((processedCount / totalCount) * 100));
+          } else if (data.progress.progress) {
+            // Fallback to API progress if no venue count available
+            calculatedProgress = data.progress.progress;
+          }
+          
           // Enhance progress data with venue count if available
           const enhancedProgress = {
             ...data.progress,
             // Use venue count from API response if available, otherwise use the provided venueCount
-            total: data.progress.total || venueCount || data.progress.total,
-            // Calculate progress percentage based on venue count if available
-            progress: venueCount && data.progress.current 
-              ? Math.min(100, Math.round((data.progress.current / venueCount) * 100))
-              : data.progress.progress
+            total: totalCount,
+            current: processedCount,
+            // Use calculated progress based on actual processed venues
+            progress: calculatedProgress
           };
           
           setProgress(enhancedProgress);
@@ -85,17 +97,22 @@ export const useProgressTracking = (operationId: string | null, venueCount?: num
           return;
         }
 
-        // Continue polling every 2 seconds
-        setTimeout(pollProgress, 2000);
+        // Adaptive polling: faster when running, slower when complete
+        const isRunning = data.progress.status === 'running';
+        const pollDelay = isRunning ? 500 : 2000; // 500ms when running, 2s otherwise
+        
+        // Continue polling with adaptive delay
+        setTimeout(() => pollProgress(false), pollDelay);
       } catch (err) {
         console.error('Progress polling error:', err);
         setError(err instanceof Error ? err.message : 'Network error');
-        // Retry after 5 seconds on error
-        setTimeout(pollProgress, 5000);
+        // Retry after 2 seconds on error (reduced from 5s)
+        setTimeout(() => pollProgress(false), 2000);
       }
     };
 
-    pollProgress();
+    // Start with immediate first poll
+    pollProgress(true);
   }, [operationId, venueCount]);
 
   useEffect(() => {

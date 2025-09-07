@@ -181,7 +181,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm">
             <span className="text-muted-foreground">Processed</span>
             <span className="text-primary font-bold">
-              {progress.data?.processedLocations?.length || progress.current} of {venueCount || progress.data?.processedLocations?.length || progress.total}
+              {progress.current} of {progress.total}
             </span>
             <span className="text-muted-foreground">venues in</span>
             <span className="text-primary font-bold">
@@ -237,19 +237,21 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
           {progress.data?.processedLocations && progress.data.processedLocations.length > 0 ? (
             <div className="space-y-2">
               <ItemTitle className="text-sm text-muted-foreground">Processed Venues</ItemTitle>
-              <div className="grid grid-cols-1 gap-2">
-                {progress.data.processedLocations.map((location, index) => (
-                  <Badge 
-                    key={index} 
-                    variant="outline" 
-                    className="justify-between"
-                  >
-                    <span>{location.name}</span>
-                    <Badge variant="secondary" size="sm">
-                      {location.status}
+              <div className="max-h-128 overflow-y-auto border rounded-lg p-2 bg-muted/10">
+                <div className="grid grid-cols-1 gap-2">
+                  {progress.data.processedLocations.map((location, index) => (
+                    <Badge 
+                      key={index} 
+                      variant="outline" 
+                      className="justify-between"
+                    >
+                      <span>{location.name}</span>
+                      <Badge variant="secondary" size="sm">
+                        {location.status}
+                      </Badge>
                     </Badge>
-                  </Badge>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
