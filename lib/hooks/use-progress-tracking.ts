@@ -50,7 +50,7 @@ export const useProgressTracking = (operationId: string | null, venueCount?: num
     setIsLoading(true);
     setError(null);
 
-    const pollProgress = async (isFirstPoll = false) => {
+    const pollProgress = async (_isFirstPoll = false) => {
       try {
         const response = await fetch(`${API_CONFIG.baseUrl}/api/progress/${operationId}`, {
           method: 'GET',
