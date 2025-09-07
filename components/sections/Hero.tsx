@@ -1,4 +1,6 @@
-import { ReactNode } from "react";
+"use client";
+
+import { ReactNode, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -10,6 +12,7 @@ import Glow from "../ui/glow";
 import { Mockup, MockupFrame } from "../ui/mockup";
 import Screenshot from "../ui/screenshot";
 import { Section } from "../ui/section";
+import { SignInModal } from "../ui/signin-modal";
 
 /**
  * 🎨 HERO BUTTON CONFIGURATION
@@ -40,6 +43,7 @@ interface HeroButtonProps {
   variant?: ButtonProps["variant"];
   icon?: ReactNode;
   iconRight?: ReactNode;
+  isSignInButton?: boolean;
 }
 
 /**
@@ -130,12 +134,13 @@ export default function Hero({
   badge = <ApiStatusBadge className="animate-appear" />,
   // 🎨 BRAND CUSTOMIZATION: Action buttons - change text, links, and variants
   buttons = [
-          {
-        href: "https://goaltech.in",
-        text: "GoalTech",
-        variant: "default",
-        icon: <React className="mr-2 size-4" />,
-      },
+    {
+      href: "https://www.claygrounds.com",
+      text: "Sign in",
+      variant: "default",
+      icon: <React className="mr-2 size-4" />,
+      isSignInButton: true,
+    },
     {
       href: "https://github.com/arpitgupta2712",
       text: "Github",
@@ -146,6 +151,8 @@ export default function Hero({
   // 🎨 BRAND CUSTOMIZATION: Additional styling classes
   className,
 }: HeroProps) {
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  
   return (
     <Section
       className={cn(
@@ -176,13 +183,28 @@ export default function Hero({
                   key={index}
                   variant={button.variant || "default"}
                   size="lg"
-                  asChild
+                  onClick={() => {
+                    if (button.isSignInButton) {
+                      setIsSignInModalOpen(true);
+                    } else {
+                      window.open(button.href, '_blank');
+                    }
+                  }}
+                  asChild={!button.isSignInButton}
                 >
-                  <a href={button.href}>
-                    {button.icon}
-                    {button.text}
-                    {button.iconRight}
-                  </a>
+                  {button.isSignInButton ? (
+                    <>
+                      {button.icon}
+                      {button.text}
+                      {button.iconRight}
+                    </>
+                  ) : (
+                    <a href={button.href}>
+                      {button.icon}
+                      {button.text}
+                      {button.iconRight}
+                    </a>
+                  )}
                 </Button>
               ))}
             </div>
@@ -211,6 +233,12 @@ export default function Hero({
           )}
         </div>
       </div>
+      
+      {/* 🎨 SIGN IN MODAL: Modal for user authentication */}
+      <SignInModal 
+        open={isSignInModalOpen} 
+        onOpenChange={setIsSignInModalOpen} 
+      />
     </Section>
   );
 }

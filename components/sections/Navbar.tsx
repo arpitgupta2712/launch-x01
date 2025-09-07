@@ -79,14 +79,7 @@ export default function Navbar({
     { text: "Vault", href: "#db" },
     { text: "Systems", href: "#pricing" },
   ],
-  actions = [
-    {
-      text: "Sign in",
-      href: "https://www.claygrounds.com",
-      isButton: true,
-      variant: "default",
-    },
-  ],
+  actions = [],
   showNavigation = true, // 🎨 BRAND CUSTOMIZATION: Set to false to hide main navigation
   customNavigation, // 🎨 BRAND CUSTOMIZATION: Provide custom navigation component
   className, // 🎨 BRAND CUSTOMIZATION: Add custom styling classes
