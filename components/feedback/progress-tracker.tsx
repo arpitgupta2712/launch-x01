@@ -87,72 +87,62 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
     return null;
   };
 
-  // Extract all processed venues from logs with better parsing
+  // Simplified venue extraction - capture venue names and amounts
   const getProcessedVenues = React.useCallback(() => {
     if (!progress?.logs) return [];
     
-    const processedVenues: Array<{name: string, status: 'success' | 'failed', timestamp: string}> = [];
+    const processedVenues: Array<{name: string, status: 'success' | 'failed', timestamp: string, amount?: string}> = [];
     
     progress.logs.forEach(log => {
-      // Success patterns
-      if (log.message.includes("✅ File processed successfully:") || 
-          log.message.includes("File processed successfully:")) {
-        const patterns = [
-          /for: ([^(]+)/,
-          /for ([^(]+)/,
-          /venue: ([^(]+)/,
-          /Processing ([^(]+) completed/
-        ];
+      // Pattern: "✅ File processed successfully: X bookings for Venue Name (₹amount)"
+      if (log.message.includes("✅ File processed successfully:")) {
+        const venueMatch = log.message.match(/bookings for ([^(]+)/);
+        const amountMatch = log.message.match(/\(₹([^)]+)\)/);
         
-        for (const pattern of patterns) {
-          const match = log.message.match(pattern);
-          if (match) {
-            processedVenues.push({
-              name: match[1].trim(),
-              status: 'success',
-              timestamp: log.timestamp
-            });
-            break;
-          }
+        if (venueMatch) {
+          processedVenues.push({
+            name: venueMatch[1].trim(),
+            status: 'success',
+            timestamp: log.timestamp,
+            amount: amountMatch ? amountMatch[1] : undefined
+          });
         }
       }
       
-      // Failure patterns
-      if (log.message.includes("❌ Failed to process") || 
-          log.message.includes("Failed to process") ||
-          log.message.includes("Error processing")) {
-        const patterns = [
-          /for: ([^(]+)/,
-          /for ([^(]+)/,
-          /venue: ([^(]+)/,
-          /Processing ([^(]+) failed/
-        ];
-        
-        for (const pattern of patterns) {
-          const match = log.message.match(pattern);
-          if (match) {
-            processedVenues.push({
-              name: match[1].trim(),
-              status: 'failed',
-              timestamp: log.timestamp
-            });
-            break;
-          }
+      // Handle failures if any
+      if (log.message.includes("❌ Failed to process")) {
+        const match = log.message.match(/for ([^(]+)/);
+        if (match) {
+          processedVenues.push({
+            name: match[1].trim(),
+            status: 'failed',
+            timestamp: log.timestamp
+          });
         }
       }
     });
     
-    // Remove duplicates and sort by timestamp
-    const uniqueVenues = processedVenues.reduce((acc, venue) => {
-      if (!acc.find(v => v.name === venue.name)) {
-        acc.push(venue);
-      }
-      return acc;
-    }, [] as typeof processedVenues);
-    
-    return uniqueVenues.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    // Sort by timestamp
+    return processedVenues.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   }, [progress?.logs]);
 
+  // Calculate total amount from all processed venues
+  const getTotalAmount = React.useCallback(() => {
+    const processedVenues = getProcessedVenues();
+    const totalAmount = processedVenues
+      .filter(venue => venue.status === 'success' && venue.amount)
+      .reduce((sum, venue) => {
+        // Remove commas and convert to number
+        const amount = parseFloat(venue.amount!.replace(/,/g, ''));
+        return sum + (isNaN(amount) ? 0 : amount);
+      }, 0);
+    
+    return totalAmount.toLocaleString('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2
+    });
+  }, [getProcessedVenues]);
 
   // Call onComplete when operation finishes (only once)
   React.useEffect(() => {
@@ -189,18 +179,19 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
     }
   }, [progress, onComplete, onError, operationId, saveProgressSummary, getProcessedVenues]);
 
-  // Debug: Log progress data to understand the structure
+  // Debug: Simple logging
   React.useEffect(() => {
     if (progress) {
-      console.log('Progress data:', {
+      const processedVenues = getProcessedVenues();
+      console.log('Simple Progress Debug:', {
         current: progress.current,
         total: progress.total,
-        processedLocations: progress.data?.processedLocations?.length,
-        venueNames: progress.data?.venueNames,
-        data: progress.data
+        status: progress.status,
+        processedVenuesCount: processedVenues.length,
+        processedVenueNames: processedVenues.map(v => v.name)
       });
     }
-  }, [progress]);
+  }, [progress, getProcessedVenues]);
 
   if (!operationId) {
     return (
@@ -275,29 +266,47 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
         </div>
       </div>
 
-      {/* Current Venue Processing - Enhanced */}
+      {/* Current Venue Processing / Final Summary */}
       {progress.data?.operation === 'bookingsProcess' && (
-        <div className="mb-4 p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg">
+        <div className="mb-4 p-4 bg-background border border-primary/30 rounded-lg">
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="text-lg">🏢</span>
-              </div>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm text-muted-foreground mb-1">Currently processing:</div>
-              <div className="font-semibold text-primary truncate">
-                {getCurrentVenue() || `Venue ${progress.current + 1} of ${progress.total}`}
-              </div>
-              {getCurrentVenue() && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  Processing in progress...
-                </div>
+              {progress.status === 'completed' ? (
+                <>
+                  <div className="text-sm text-muted-foreground mb-1">Processing Complete</div>
+                  <div className="font-semibold text-accent truncate">
+                    All {progress.total} venues processed successfully
+                  </div>
+                  <div className="text-sm text-accent/80 mt-1">
+                    Total Value: {getTotalAmount()}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm text-muted-foreground mb-1">Currently processing:</div>
+                  <div className="font-semibold text-primary truncate">
+                    {getCurrentVenue() || `Venue ${progress.current + 1} of ${progress.total}`}
+                  </div>
+                  {getCurrentVenue() && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Processing in progress...
+                    </div>
+                  )}
+                </>
               )}
             </div>
             {progress.status === 'running' && (
               <div className="flex-shrink-0">
                 <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+            {progress.status === 'completed' && (
+              <div className="flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                  <span className="text-accent-foreground text-sm">✓</span>
+                </div>
               </div>
             )}
           </div>
@@ -306,7 +315,7 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
 
       {/* Processed Venues List - Enhanced */}
       {progress.data?.operation === 'bookingsProcess' && getProcessedVenues().length > 0 && (
-        <div className="mb-4 p-4 bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/30 rounded-lg">
+        <div className="mb-4 p-4 bg-background border border-primary/30 rounded-lg">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-muted-foreground">
@@ -315,13 +324,11 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
             </div>
             <div className="flex items-center gap-2 text-xs">
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-muted-foreground">
                   {getProcessedVenues().filter(v => v.status === 'success').length} done
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                 <span className="text-muted-foreground">
                   {getProcessedVenues().filter(v => v.status === 'failed').length} failed
                 </span>
@@ -331,24 +338,29 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
           <div className="max-h-96 overflow-y-auto">
             <div className="space-y-2">
               {getProcessedVenues().map((venue, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-background/50 rounded border">
+                <div key={index} className="flex items-center justify-between p-2 bg-background/50">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      venue.status === 'success' ? 'bg-green-500' : 'bg-red-500'
-                    }`}></div>
+                    <div className="flex-shrink-0">
+                      <Badge 
+                        variant={venue.status === 'success' ? 'accent' : 'destructive'} 
+                        size="sm"
+                        className="text-xs w-5 h-5 p-0 flex items-center justify-center"
+                      >
+                        {venue.status === 'success' ? '✓' : '✗'}
+                      </Badge>
+                    </div>
                     <span className="text-sm font-medium truncate">{venue.name}</span>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Badge 
-                      variant={venue.status === 'success' ? 'accent' : 'destructive'} 
-                      size="sm"
-                      className="text-xs"
-                    >
-                      {venue.status === 'success' ? '✓' : '✗'}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(venue.timestamp).toLocaleTimeString()}
-                    </span>
+                  <div className="flex-shrink-0">
+                    {venue.status === 'success' && venue.amount ? (
+                      <span className="text-sm font-semibold text-accent">
+                        ₹{venue.amount}
+                      </span>
+                    ) : venue.status === 'failed' ? (
+                      <span className="text-xs text-destructive">
+                        Failed
+                      </span>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -363,9 +375,7 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm">
             <span className="text-muted-foreground">Processed</span>
             <span className={`font-bold ${progress.status === 'completed' ? 'text-accent' : 'text-primary'}`}>
-              {progress.status === 'completed' 
-                ? (progress.data?.processedLocations?.length || progress.total)
-                : progress.current} of {progress.total}
+              {progress.status === 'completed' ? progress.total : progress.current} of {progress.total}
             </span>
             <span className="text-muted-foreground">
               {progress.data?.operation === 'bookingsProcess' ? 'files' : 'venues'} in
@@ -377,8 +387,8 @@ export function ProgressTracker({ operationId, venueCount, onComplete, onError }
         </div>
       </div>
 
-      {/* Date Range Display */}
-      {progress.data && progress.data.startDate && progress.data.endDate && (
+      {/* Date Range Display - Only show for email reports, not for file processing */}
+      {progress.data && progress.data.startDate && progress.data.endDate && progress.data.operation !== 'bookingsProcess' && (
         <div className="relative z-10">
           <Badge variant="outline" className="w-full justify-center py-2">
             {formatNaturalDate(progress.data.startDate)} to {formatNaturalDate(progress.data.endDate)}
