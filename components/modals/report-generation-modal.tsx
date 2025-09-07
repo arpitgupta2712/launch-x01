@@ -125,6 +125,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
 
   const handleSelectBucketFiles = () => {
     setSelectedAction('bucketFiles');
+    setSelectedExistingFile('all'); // Automatically set to process all files
   };
 
   const handleSelectFileUpload = () => {
@@ -222,25 +223,26 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
       let response;
       
       if (selectedAction === 'bucketFiles' && selectedExistingFile) {
-        // Process existing bucket file
-        response = await fetch(`${API_CONFIG.baseUrl}/api/process-bucket-file`, {
+        // Process all files in bucket
+        response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.processReports}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: API_CONFIG.defaultHeaders,
+          mode: API_CONFIG.corsMode,
           body: JSON.stringify({
-            fileName: selectedExistingFile,
+            source: 'bucket',
+            processAll: true,
           }),
         });
       } else if (selectedAction === 'fileUpload' && uploadedFileName) {
-        // Process uploaded file
-        response = await fetch(`${API_CONFIG.baseUrl}/api/process-uploaded-file`, {
+        // Process uploaded file(s)
+        response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.processReports}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: API_CONFIG.defaultHeaders,
+          mode: API_CONFIG.corsMode,
           body: JSON.stringify({
             fileName: uploadedFileName,
+            source: 'upload',
+            processAll: true,
           }),
         });
       } else {
@@ -575,7 +577,6 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
               {selectedAction === 'bucketFiles' && (
                 <div className="space-y-6">
                   <BucketFilesSummary
-                    onFileSelect={handleExistingFileSelect}
                     onRefresh={() => {}}
                   />
 
@@ -593,7 +594,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
                       disabled={isProcessing || !selectedExistingFile}
                       className="flex-1"
                     >
-                      {isProcessing ? 'Processing...' : 'Process File'}
+                      {isProcessing ? 'Processing...' : 'Process All Files'}
                     </Button>
                   </div>
                 </div>
@@ -631,7 +632,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
                       disabled={isProcessing || !uploadedFileName}
                       className="flex-1"
                     >
-                      {isProcessing ? 'Processing...' : 'Process Files'}
+                      {isProcessing ? 'Processing...' : 'Process All Files'}
                     </Button>
                   </div>
                 </div>

@@ -183,18 +183,6 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
             </div>
           </div>
 
-          {/* Action Buttons */}
-          {files.length > 0 && (
-            <div className="space-y-3">
-              <Button
-                onClick={() => onFileSelect?.(files[0].fileName)}
-                className="w-full"
-                variant="default"
-              >
-                Process Bookings to DB
-              </Button>
-            </div>
-          )}
         </div>
       )}
     </Card>
