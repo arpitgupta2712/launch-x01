@@ -54,7 +54,7 @@ export function BucketFilesSummary({ onFileSelect, onRefresh, className = "" }: 
       } else {
         setError(data.error || 'Failed to fetch files');
       }
-      } catch (_err) {
+      } catch {
       setError('Network error while fetching files');
     } finally {
       setIsLoading(false);

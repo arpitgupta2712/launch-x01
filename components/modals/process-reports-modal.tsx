@@ -51,7 +51,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
     if (open && currentOperation && isOperationRunning) {
       setCurrentStep('processing');
     }
-  }, [open, currentOperation?.id, isOperationRunning]);
+  }, [open, currentOperation, isOperationRunning]);
 
   const clearError = () => setError(null);
   const clearUploadError = () => setUploadError(null);
@@ -143,7 +143,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
           type: 'error',
         });
       }
-      } catch (_err) {
+      } catch {
       const errorMessage = 'Network error. Please try again.';
       setError(errorMessage);
       addToast({
@@ -179,7 +179,7 @@ export function ProcessReportsModal({ open, onOpenChange }: ProcessReportsModalP
         duration: 5000,
       });
     }
-  }, [currentOperation?.id, currentOperation?.status, addToast]);
+  }, [currentOperation, addToast]);
 
   const handleProgressError = React.useCallback((errorMessage: string) => {
     // Show error toast

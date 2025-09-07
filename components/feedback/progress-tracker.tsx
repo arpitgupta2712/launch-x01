@@ -88,7 +88,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
         }
       }
     }
-  }, [progress?.status, onComplete, onError]);
+  }, [progress, onComplete, onError]);
 
   // Debug: Log progress data to understand the structure
   React.useEffect(() => {
