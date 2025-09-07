@@ -6,6 +6,7 @@ import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { API_CONFIG } from '@/lib/api/config';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { useOperation } from '@/lib/contexts/operation-context';
+import { useProgressPersistence } from '@/lib/hooks/use-progress-persistence';
 
 import { BucketFilesSummary } from '../features/bucket-summary';
 import { FileUploader } from '../features/file-uploader';
@@ -38,6 +39,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
   const { signIn, isLoading: authLoading, error: authError, clearError: clearAuthError, setError: setAuthError, operationId, clearOperationId, venueCount, estimatedDuration } = useAuth();
   const { currentOperation, setCurrentOperation, isOperationRunning } = useOperation();
   const { addToast } = useToast();
+  const { lastSummary, clearProgressSummary } = useProgressPersistence();
 
   // Simplified state management
   const [selectedAction, setSelectedAction] = useState<ActionType>(null);
@@ -301,11 +303,15 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
   // Progress completion handler
   const handleProgressComplete = React.useCallback(() => {
     const processedCount = currentOperation?.current || 0;
+    const totalCount = currentOperation?.total || 0;
+    const duration = currentOperation?.duration || 0;
+    const operation = currentOperation?.data?.operation;
+    
     addToast({
       title: 'Processing Complete',
-      description: `Successfully processed ${processedCount} ${currentOperation?.data?.operation === 'bookingsProcess' ? 'files' : 'venues'}.`,
+      description: `Successfully processed ${processedCount} of ${totalCount} ${operation === 'bookingsProcess' ? 'files' : 'venues'} in ${duration}s. Check the modal for detailed summary.`,
       type: 'success',
-      duration: 5000,
+      duration: 10000, // Longer duration to give time to read
     });
     
     // Return to selection after completion
@@ -434,6 +440,62 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
           </div>
 
           <Divider className="my-6" />
+
+          {/* Last Run Summary */}
+          {lastSummary && !currentOperation && (
+            <div className="mb-6">
+              <Card className="p-4 border-accent/20 bg-accent/5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <h3 className="font-medium text-sm">Last Run Summary</h3>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearProgressSummary}
+                    className="h-6 w-6 p-0"
+                  >
+                    ×
+                  </Button>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Operation:</span>
+                    <Badge variant="outline" className="text-xs">
+                      {lastSummary.operation === 'bookingsProcess' ? 'File Processing' : 
+                       lastSummary.operation === 'emailReports' ? 'Email Reports' : 
+                       lastSummary.operation}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Status:</span>
+                    <Badge 
+                      variant={lastSummary.status === 'completed' ? 'accent' : 'destructive'} 
+                      className="text-xs"
+                    >
+                      {lastSummary.status}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Processed:</span>
+                    <span className="font-medium">
+                      {lastSummary.processed} of {lastSummary.total} {lastSummary.operation === 'bookingsProcess' ? 'files' : 'venues'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Duration:</span>
+                    <span className="font-medium">{lastSummary.duration}s</span>
+                  </div>
+                  {lastSummary.error && (
+                    <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded text-xs text-destructive">
+                      {lastSummary.error}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          )}
 
           {/* Main Content */}
           {currentOperation && isOperationRunning ? (

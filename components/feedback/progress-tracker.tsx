@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { useProgressTracking } from '@/lib/hooks/use-progress-tracking';
+import { useProgressPersistence } from '@/lib/hooks/use-progress-persistence';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Badge } from '../ui/badge';
@@ -21,6 +22,7 @@ interface ProgressTrackerProps {
 
 export function ProgressTracker({ operationId, venueCount, estimatedDuration, onComplete, onError }: ProgressTrackerProps) {
   const { progress, error } = useProgressTracking(operationId, venueCount);
+  const { saveProgressSummary } = useProgressPersistence();
   const hasCalledComplete = React.useRef(false);
 
   // Reset the completion flag when operation ID changes
@@ -89,6 +91,24 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
     if (progress && (progress.status === 'completed' || progress.status === 'failed' || progress.status === 'timeout')) {
       if (!hasCalledComplete.current) {
         hasCalledComplete.current = true;
+        
+        // Save progress summary to localStorage
+        if (operationId) {
+          saveProgressSummary({
+            id: operationId,
+            operation: progress.data?.operation || 'unknown',
+            status: progress.status,
+            total: progress.total,
+            processed: progress.data?.processedLocations?.length || progress.current,
+            duration: progress.duration,
+            startTime: progress.startTime,
+            endTime: progress.endTime || new Date().toISOString(),
+            error: progress.error,
+            venueNames: progress.data?.venueNames,
+            processedLocations: progress.data?.processedLocations,
+          });
+        }
+        
         onComplete?.();
         
         // If operation failed with authentication error, notify parent
@@ -97,7 +117,7 @@ export function ProgressTracker({ operationId, venueCount, estimatedDuration, on
         }
       }
     }
-  }, [progress, onComplete, onError]);
+  }, [progress, onComplete, onError, operationId, saveProgressSummary]);
 
   // Debug: Log progress data to understand the structure
   React.useEffect(() => {
