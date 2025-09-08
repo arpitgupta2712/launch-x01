@@ -27,12 +27,14 @@ interface StepNavigationProps {
   currentStep: string;
   className?: string;
   onStepClick?: (stepId: string) => void;
+  compact?: boolean;
 }
 
 export function StepNavigation({ 
   steps, 
   className,
-  onStepClick 
+  onStepClick,
+  compact = false
 }: Omit<StepNavigationProps, 'currentStep'>) {
   const [hoveredStep, setHoveredStep] = React.useState<string | null>(null);
   
@@ -40,10 +42,11 @@ export function StepNavigation({
   const defaultIcons = [Target, Zap, Sparkles, Trophy];
   
   return (
-    <div className={cn("w-full max-w-[600px] p-4", className)}>
+    <div className={cn("w-full p-4", className)}>
       <div className="relative">
         {/* Background line */}
-        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-muted-foreground/20 via-primary/20 to-muted-foreground/20" />
+        <div className={cn("absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-muted-foreground/20 via-primary/20 to-muted-foreground/20", 
+          compact ? "left-4" : "left-6")} />
         
         {steps.map((step, index) => {
           const isCompleted = step.status === 'completed';
@@ -57,7 +60,8 @@ export function StepNavigation({
             <div
               key={step.id}
               className={cn(
-                "relative flex items-start gap-4 pb-8 last:pb-0 transition-all duration-300",
+                "relative flex items-start transition-all duration-300",
+                compact ? "gap-4 pb-4 last:pb-0" : "gap-4 pb-8 last:pb-0",
                 {
                   "scale-[1.02]": isHovered,
                   "cursor-pointer": onStepClick && (isCompleted || isCurrent),
@@ -72,7 +76,8 @@ export function StepNavigation({
               {index < steps.length - 1 && (
                 <div
                   className={cn(
-                    "absolute left-6 top-12 bottom-0 w-0.5 transition-all duration-500",
+                    "absolute bottom-0 w-0.5 transition-all duration-500",
+                    compact ? "left-4 top-8" : "left-6 top-12",
                     {
                       "bg-gradient-to-b from-accent to-accent/50": isCompleted,
                       "bg-gradient-to-b from-primary to-transparent animate-pulse": isCurrent,
@@ -85,7 +90,8 @@ export function StepNavigation({
               <div className="relative z-10 flex-shrink-0">
                 <div
                   className={cn(
-                    "flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 shadow-lg",
+                    "flex items-center justify-center rounded-full border-2 transition-all duration-300 shadow-lg",
+                    compact ? "w-8 h-8" : "w-12 h-12",
                     {
                       "bg-gradient-to-br from-accent to-accent/80 border-accent text-accent-foreground shadow-accent/30": isCompleted,
                       "bg-gradient-to-br from-primary to-primary/80 border-primary text-primary-foreground shadow-primary/30 animate-pulse": isCurrent,
@@ -113,7 +119,8 @@ export function StepNavigation({
                 {/* Step number badge */}
                 <div
                   className={cn(
-                    "absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300",
+                    "absolute -top-1 -right-1 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300",
+                    compact ? "w-4 h-4" : "w-5 h-5",
                     {
                       "bg-accent text-accent-foreground": isCompleted,
                       "bg-primary text-primary-foreground": isCurrent,
@@ -127,11 +134,12 @@ export function StepNavigation({
               </div>
               
               {/* Step content */}
-              <div className="flex-1 min-w-0 pt-1">
+              <div className={cn("flex-1 min-w-0", compact ? "pt-0" : "pt-1")}>
                 <div className="flex items-center gap-2">
                   <h3
                     className={cn(
-                      "font-semibold text-sm transition-colors duration-300",
+                      "font-semibold transition-colors duration-300",
+                      compact ? "text-xs" : "text-sm",
                       {
                         "text-accent": isCompleted,
                         "text-primary": isCurrent,
@@ -150,7 +158,7 @@ export function StepNavigation({
                   )}
                 </div>
                 
-                {step.description && (
+                {step.description && !compact && (
                   <p
                     className={cn(
                       "text-xs mt-1 transition-all duration-300",
@@ -189,24 +197,6 @@ export function StepNavigation({
             </div>
           );
         })}
-      </div>
-      
-      {/* Overall progress */}
-      <div className="mt-6 pt-4 border-t border-muted-foreground/10">
-        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-          <span>Overall Progress</span>
-          <span className="font-medium">
-            {steps.filter(s => s.status === 'completed').length} of {steps.length}
-          </span>
-        </div>
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500"
-            style={{ 
-              width: `${(steps.filter(s => s.status === 'completed').length / steps.length) * 100}%` 
-            }}
-          />
-        </div>
       </div>
     </div>
   );

@@ -81,6 +81,9 @@ export const useProgressPersistence = () => {
         }
       }
       
+      // Remove any existing summary with the same ID to prevent duplicates
+      summaries = summaries.filter(s => s.id !== summaryWithTimestamp.id);
+      
       // Add new summary at the beginning and keep only last 5
       summaries.unshift(summaryWithTimestamp);
       summaries = summaries.slice(0, 5);

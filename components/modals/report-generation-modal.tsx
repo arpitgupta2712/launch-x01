@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { CheckCircle, FileChartColumn, RotateCcw } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 import { API_CONFIG } from '@/lib/api/config';
@@ -37,7 +37,6 @@ import { Input } from '../forms/input';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { Divider } from '../ui/divider';
 import {
   Sheet,
   SheetContent,
@@ -46,7 +45,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '../ui/sheet';
-import { StepNavigation } from '../ui/step-navigation';
 
 interface ReportGenerationModalProps {
   open: boolean;
@@ -56,10 +54,19 @@ interface ReportGenerationModalProps {
 type ActionType = 'emailReports' | 'bucketFiles' | 'fileUpload' | null;
 
 export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationModalProps) {
-  const { signIn, isLoading: authLoading, error: authError, clearError: clearAuthError, setError: setAuthError, clearOperationId } = useAuth();
+  const { signIn, isLoading: authLoading, error: authError, clearError: clearAuthError, setError: setAuthError } = useAuth();
   const { currentOperation, setCurrentOperation, isOperationRunning } = useOperation();
   const { addToast } = useToast();
   const { recentSummaries, clearProgressSummary } = useProgressPersistence();
+
+  // Only clear errors when modal opens, preserve state
+  useEffect(() => {
+    if (open) {
+      setUploadError(null);
+      setProcessingError(null);
+      clearAuthError();
+    }
+  }, [open, clearAuthError]);
 
   // Simplified state management
   const [selectedAction, setSelectedAction] = useState<ActionType>(null);
@@ -126,12 +133,30 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
   };
 
   const handleBackToSelection = () => {
+    console.log('handleBackToSelection called'); // Debug log
     setSelectedAction(null);
     setSelectedExistingFile(null);
     setUploadedFileName(null);
     setUploadError(null);
     setProcessingError(null);
     clearAuthError();
+    setCurrentOperation(null); // Clear the current operation to go back to selection
+  };
+
+  const handleRefresh = () => {
+    console.log('handleRefresh called'); // Debug log
+    // Complete reset to initial state
+    setSelectedAction(null);
+    setSelectedExistingFile(null);
+    setUploadedFileName(null);
+    setUploadError(null);
+    setProcessingError(null);
+    clearAuthError();
+    setCurrentOperation(null);
+    clearProgressSummary();
+    // Close and reopen modal
+    onOpenChange(false);
+    setTimeout(() => onOpenChange(true), 100);
   };
 
   // Authentication handler
@@ -290,6 +315,15 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
     const duration = currentOperation?.duration || 0;
     const operation = currentOperation?.data?.operation;
     
+    // Update the operation status to completed
+    if (currentOperation) {
+      setCurrentOperation({
+        ...currentOperation,
+        status: 'completed',
+        endTime: new Date().toISOString()
+      });
+    }
+    
     addToast({
       title: 'Processing Complete',
       description: `Successfully processed ${processedCount} of ${totalCount} ${operation === 'bookingsProcess' ? 'files' : 'venues'} in ${duration}s. Check the modal for detailed summary.`,
@@ -298,7 +332,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
     });
     
     // Don't auto-dismiss - let user manually close or start new operation
-  }, [currentOperation, addToast]);
+  }, [currentOperation, addToast, setCurrentOperation]);
 
   const handleProgressError = React.useCallback((errorMessage: string) => {
     setProcessingError(errorMessage);
@@ -310,199 +344,23 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
     });
   }, [addToast]);
 
-  // Close handler
-  const handleClose = () => {
-    if (isOperationRunning) {
-      addToast({
-        title: 'Operation in Progress',
-        description: 'Cannot close modal while operation is running.',
-        type: 'warning',
-        duration: 5000,
-      });
-      return;
-    }
-    
-    setSelectedAction(null);
-    setSelectedExistingFile(null);
-    setUploadedFileName(null);
-    setUploadError(null);
-    setProcessingError(null);
-    clearAuthError();
-    clearOperationId();
-    onOpenChange(false);
-  };
-
-  // Determine current step for navigation
-  const getCurrentStep = () => {
-    if (!selectedAction) return 'selection';
-    if (currentOperation && isOperationRunning) return 'processing';
-    return selectedAction;
-  };
-
-  // Step definitions for navigation - simplified and more intuitive
-  const getStepStatus = (stepId: string) => {
-    const current = getCurrentStep();
-    
-    if (stepId === 'selection') {
-      return current === 'selection' ? 'current' : 'completed';
-    }
-    
-    if (stepId === 'processing') {
-      return current === 'processing' ? 'current' : (currentOperation ? 'completed' : 'pending');
-    }
-    
-    // For action steps (emailReports, bucketFiles, fileUpload)
-    if (selectedAction === stepId) {
-      return currentOperation ? 'completed' : 'current';
-    }
-    
-    return 'pending';
-  };
-
-  const steps = [
-    { 
-      id: 'selection', 
-      title: 'Choose', 
-      description: 'Select Option', 
-      status: getStepStatus('selection') as 'current' | 'completed' | 'pending' | 'error' 
-    },
-    { 
-      id: 'emailReports', 
-      title: 'Email', 
-      description: 'Generate Reports', 
-      status: getStepStatus('emailReports') as 'current' | 'completed' | 'pending' | 'error' 
-    },
-    { 
-      id: 'bucketFiles', 
-      title: 'Bucket', 
-      description: 'Process Files', 
-      status: getStepStatus('bucketFiles') as 'current' | 'completed' | 'pending' | 'error' 
-    },
-    { 
-      id: 'fileUpload', 
-      title: 'Upload', 
-      description: 'Upload & Process', 
-      status: getStepStatus('fileUpload') as 'current' | 'completed' | 'pending' | 'error' 
-    },
-    { 
-      id: 'processing', 
-      title: 'Process', 
-      description: 'Generate', 
-      status: getStepStatus('processing') as 'current' | 'completed' | 'pending' | 'error' 
-    },
-  ];
-
   return (
-    <Sheet open={open} onOpenChange={handleClose}>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-[600px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-accent" />
-            Generate Reports
+            <FileChartColumn className="h-5 w-5 text-primary" />
+            Hudle Reports
           </SheetTitle>
           <SheetDescription>
             {currentOperation && isOperationRunning 
               ? "Your reports are being processed. Please wait while we handle your request."
-              : "Choose how you'd like to generate your reports."
+              : "Email Reports and upload booking files to generate reports."
             }
           </SheetDescription>
         </SheetHeader>
 
         <div className="py-6">
-          {/* Step Navigation */}
-          <div className="mb-6">
-            <StepNavigation steps={steps} />
-          </div>
-
-          <Divider className="my-6" />
-
-          {/* Recent Operations Summary */}
-          {recentSummaries.length > 0 && !currentOperation && (
-            <div className="mb-6">
-              <Card className="p-4 border-accent/20 bg-accent/5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-accent" />
-                    <h3 className="font-medium text-sm">Recent Operations</h3>
-                    <Badge variant="outline" size="sm" className="text-xs">
-                      {recentSummaries.length} operations
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearProgressSummary}
-                    className="h-6 w-6 p-0"
-                  >
-                    ×
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  {recentSummaries.slice(0, 3).map((summary) => (
-                    <div key={summary.id} className="p-3 bg-background/50 rounded border">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {summary.operation === 'bookingsProcess' ? 'File Processing' : 
-                             summary.operation === 'emailReports' ? 'Email Reports' : 
-                             summary.operation}
-                          </Badge>
-                          <Badge 
-                            variant={summary.status === 'completed' ? 'accent' : 'destructive'} 
-                            className="text-xs"
-                          >
-                            {summary.status}
-                          </Badge>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date((summary as ProgressSummary & { storedAt?: string }).storedAt || summary.endTime).toLocaleTimeString()}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Processed:</span>
-                          <span className="font-medium">
-                            {summary.processed} of {summary.total} {summary.operation === 'bookingsProcess' ? 'files' : 'venues'}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Duration:</span>
-                          <span className="font-medium">{summary.duration}s</span>
-                        </div>
-                      </div>
-                      {summary.processedVenuesFromLogs && summary.processedVenuesFromLogs.length > 0 && (
-                        <div className="mt-2">
-                          <div className="text-xs text-muted-foreground mb-1">Recent Venues:</div>
-                          <div className="flex flex-wrap gap-1">
-                            {summary.processedVenuesFromLogs.slice(0, 3).map((venue, venueIndex) => (
-                              <Badge key={venueIndex} variant="secondary" size="sm" className="text-xs">
-                                {venue}
-                              </Badge>
-                            ))}
-                            {summary.processedVenuesFromLogs.length > 3 && (
-                              <Badge variant="outline" size="sm" className="text-xs">
-                                +{summary.processedVenuesFromLogs.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      {summary.error && (
-                        <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded text-xs text-destructive">
-                          {summary.error}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {recentSummaries.length > 3 && (
-                    <div className="text-xs text-muted-foreground text-center">
-                      ... and {recentSummaries.length - 3} more operations
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </div>
-          )}
 
           {/* Main Content */}
           {currentOperation && isOperationRunning ? (
@@ -515,11 +373,47 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
                 onError={handleProgressError}
               />
             </div>
+          ) : currentOperation && !isOperationRunning ? (
+            <div className="space-y-6">
+              <ProgressTracker
+                operationId={currentOperation.id}
+                venueCount={currentOperation.venueCount}
+                estimatedDuration={currentOperation.estimatedDuration}
+                onComplete={handleProgressComplete}
+                onError={handleProgressError}
+              />
+              
+              {/* Back Button for Completed Operations */}
+              <div className="flex justify-center gap-3 pt-4">
+                <Button
+                  onClick={handleBackToSelection}
+                  variant="outline"
+                  className="h-10 px-6"
+                >
+                  ← Start New Operation
+                </Button>
+                <Button
+                  onClick={handleRefresh}
+                  variant="secondary"
+                  className="h-10 px-6 gap-2"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Refresh
+                </Button>
+                <Button
+                  onClick={() => onOpenChange(false)}
+                  variant="default"
+                  className="h-10 px-6"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
           ) : (
             <div className="space-y-6">
               {/* Selection Step */}
               {!selectedAction && (
-                <div className="space-y-6">
+                <div className="space-y-2">
                   <ReportProcessor
                     onSelectEmailReports={handleSelectEmailReports}
                     onSelectBucketFiles={handleSelectBucketFiles}
@@ -530,10 +424,10 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={handleClose}
+                      onClick={() => onOpenChange(false)}
                       className="h-10"
                     >
-                      Cancel
+                      Close
                     </Button>
                   </SheetFooter>
                 </div>
@@ -715,6 +609,101 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
               )}
             </div>
           )}
+
+
+          {/* Recent Operations Summary */}
+          {recentSummaries.length > 0 && !currentOperation && (
+            <div className="mt-6">
+              <Card className="p-4 border-accent/20 bg-accent/5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <h3 className="font-medium text-sm">Recent Operations</h3>
+                    <Badge variant="outline" size="sm" className="text-xs">
+                      {recentSummaries.length} operations
+                    </Badge>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearProgressSummary}
+                    className="h-6 w-6 p-0"
+                  >
+                    ×
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {recentSummaries
+                    .filter((summary, index, self) => 
+                      index === self.findIndex(s => s.id === summary.id)
+                    )
+                    .slice(0, 3)
+                    .map((summary, index) => (
+                    <div key={`${summary.id}-${index}`} className="p-3 bg-background/50 rounded border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {summary.operation === 'bookingsProcess' ? 'File Processing' : 
+                             summary.operation === 'emailReports' ? 'Email Reports' : 
+                             summary.operation}
+                          </Badge>
+                          <Badge 
+                            variant={summary.status === 'completed' ? 'accent' : 'destructive'} 
+                            className="text-xs"
+                          >
+                            {summary.status}
+                          </Badge>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date((summary as ProgressSummary & { storedAt?: string }).storedAt || summary.endTime).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Processed:</span>
+                          <span className="font-medium">
+                            {summary.processed} of {summary.total} {summary.operation === 'bookingsProcess' ? 'files' : 'venues'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Duration:</span>
+                          <span className="font-medium">{summary.duration}s</span>
+                        </div>
+                      </div>
+                      {summary.processedVenuesFromLogs && summary.processedVenuesFromLogs.length > 0 && (
+                        <div className="mt-2">
+                          <div className="text-xs text-muted-foreground mb-1">Recent Venues:</div>
+                          <div className="flex flex-wrap gap-1">
+                            {summary.processedVenuesFromLogs.slice(0, 3).map((venue, venueIndex) => (
+                              <Badge key={`${summary.id}-venue-${venueIndex}`} variant="secondary" size="sm" className="text-xs">
+                                {venue}
+                              </Badge>
+                            ))}
+                            {summary.processedVenuesFromLogs.length > 3 && (
+                              <Badge variant="outline" size="sm" className="text-xs">
+                                +{summary.processedVenuesFromLogs.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {summary.error && (
+                        <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded text-xs text-destructive">
+                          {summary.error}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {recentSummaries.length > 3 && (
+                    <div className="text-xs text-muted-foreground text-center">
+                      ... and {recentSummaries.length - 3} more operations
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          )}
+
         </div>
       </SheetContent>
     </Sheet>

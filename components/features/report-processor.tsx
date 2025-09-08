@@ -201,14 +201,6 @@ export function ReportProcessor({
             );
           })}
         </div>
-        
-        {/* Floating Status Indicator */}
-        <div className="absolute top-4 right-4">
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-[10px] text-muted-foreground">Ready</span>
-          </div>
-        </div>
       </Card>
     </div>
   );
