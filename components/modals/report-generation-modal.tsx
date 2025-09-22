@@ -346,7 +346,11 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-[600px] overflow-y-auto">
+      <SheetContent
+        side="top"
+        className="w-full sm:max-w-[600px] max-h-[85vh] overflow-y-auto top-1/2 left-1/2 right-auto bottom-auto -translate-x-1/2 -translate-y-1/2"
+        hideClose
+      >
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <FileChartColumn className="h-5 w-5 text-primary" />
@@ -400,13 +404,6 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
                   <RotateCcw className="h-4 w-4" />
                   Refresh
                 </Button>
-                <Button
-                  onClick={() => onOpenChange(false)}
-                  variant="default"
-                  className="h-10 px-6"
-                >
-                  Close
-                </Button>
               </div>
             </div>
           ) : (
@@ -420,16 +417,7 @@ export function ReportGenerationModal({ open, onOpenChange }: ReportGenerationMo
                     onSelectFileUpload={handleSelectFileUpload}
                   />
 
-                  <SheetFooter className="pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => onOpenChange(false)}
-                      className="h-10"
-                    >
-                      Close
-                    </Button>
-                  </SheetFooter>
+                  <SheetFooter className="pt-4"></SheetFooter>
                 </div>
               )}
 

@@ -11,7 +11,7 @@ const Sheet = SheetPrimitive.Root;
 
 const SheetTrigger = SheetPrimitive.Trigger;
 
-const SheetClose = SheetPrimitive.Close;
+
 
 const SheetPortal = SheetPrimitive.Portal;
 
@@ -52,12 +52,15 @@ const sheetVariants = cva(
 
 interface SheetContentProps
   extends React.ComponentProps<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants> {
+  hideClose?: boolean;
+}
 
 function SheetContent({
   side = "right",
   className,
   children,
+  hideClose = false,
   ...props
 }: SheetContentProps) {
   return (
@@ -68,10 +71,12 @@ function SheetContent({
         className={cn(sheetVariants({ side }), className)}
         {...props}
       >
-        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-6 right-6 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
-          <Cross2Icon className="size-5" />
-          <span className="sr-only">Close</span>
-        </SheetPrimitive.Close>
+        {!hideClose && (
+          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-6 right-6 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+            <Cross2Icon className="size-5" />
+            <span className="sr-only">Close</span>
+          </SheetPrimitive.Close>
+        )}
         {children}
       </SheetPrimitive.Content>
     </SheetPortal>
@@ -132,7 +137,7 @@ function SheetDescription({
 
 export {
   Sheet,
-  SheetClose,
+ 
   SheetContent,
   SheetDescription,
   SheetFooter,
